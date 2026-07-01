@@ -1,0 +1,24 @@
+web/static/css/app.css
+  s_d9a051a74243ef::t_007d06f7ac1427 398,401-404,407-409
+  s_d9a051a74243ef::t_e1e290be7292fb 383
+  s_d9a051a74243ef::t_83bfe83be8521d 35
+web/templates/admin/products.html
+  s_d9a051a74243ef::t_d8279709a45e7a 125-126
+  s_d9a051a74243ef::t_99923f7a7cdf25 237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "3dd8dcc010e5834c8c472ddd04cf634d1f94cbc8",
+  "prompts": {},
+  "sessions": {
+    "s_d9a051a74243ef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5dd41803-188d-478d-b34d-97a0ee4cabae",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "lubezerra_meli <lucas.bezerra@mercadolivre.com>"
+    }
+  }
+}
