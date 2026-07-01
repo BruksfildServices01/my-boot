@@ -39,7 +39,9 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
+* { max-width: 100%; }
 a { text-decoration: none; color: inherit; }
 input, textarea, select, button { font-family: inherit; }
 
@@ -51,9 +53,8 @@ input, textarea, select, button { font-family: inherit; }
 main { animation: fadeUp .3s ease-out both; }
 
 /* ── Fade-in de imagens ────────────────────────────────── */
-img { transition: opacity .35s ease; }
-img:not(.loaded) { opacity: .01; }  /* .01 evita flash completamente branco */
-img.loaded       { opacity: 1; }
+img { transition: opacity .35s ease; max-width: 100%; }
+img.loaded { opacity: 1; }
 
 /* ── Brand strip ───────────────────────────────────────── */
 .brand-strip {
@@ -396,13 +397,18 @@ img.loaded       { opacity: 1; }
   background: #fff;
   border-radius: 1.25rem 1.25rem 0 0;
   max-height: 90vh;
-  display: flex;
+  display: none;
   flex-direction: column;
-  transform: translateY(100%);
-  transition: transform .38s cubic-bezier(0.32, 0.72, 0, 1);
   box-shadow: 0 -8px 40px rgba(0,0,0,.18);
 }
-.filter-sheet.open { transform: translateY(0); }
+.filter-sheet.open {
+  display: flex;
+  animation: sheetSlideUp .38s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
 
 .sheet-handle {
   width: 40px; height: 4px;
