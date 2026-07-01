@@ -32,14 +32,13 @@
   --shadow-lg: 0 12px 32px rgba(0,0,0,.14);
 }
 
-html { scroll-behavior: smooth; overflow-x: hidden; }
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 a { text-decoration: none; color: inherit; }
 input, textarea, select, button { font-family: inherit; }
@@ -173,6 +172,7 @@ img.loaded { opacity: 1; }
   max-width: 1280px;
   margin: 0 auto;
   padding: 1.25rem 1rem 4rem;
+  overflow-x: clip;
 }
 @media (min-width: 768px) { .catalog-body { padding: 2rem 1.5rem 4rem; } }
 
@@ -609,6 +609,7 @@ img.loaded { opacity: 1; }
   max-width: 1100px;
   margin: 0 auto;
   padding: 1.25rem 1rem 6rem;
+  overflow-x: clip;
 }
 @media (min-width: 768px) { .product-detail-wrap { padding: 2rem 1.5rem 3rem; } }
 
