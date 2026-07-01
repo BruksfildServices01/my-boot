@@ -32,7 +32,7 @@
   --shadow-lg: 0 12px 32px rgba(0,0,0,.14);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg);
@@ -41,7 +41,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
-* { max-width: 100%; }
 a { text-decoration: none; color: inherit; }
 input, textarea, select, button { font-family: inherit; }
 
@@ -381,11 +380,10 @@ img.loaded { opacity: 1; }
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,.5);
   z-index: 80;
   opacity: 0;
   transition: opacity .3s ease;
-  backdrop-filter: blur(2px);
 }
 .filter-overlay.visible { display: block; }
 .filter-overlay.open    { opacity: 1; }
@@ -397,17 +395,18 @@ img.loaded { opacity: 1; }
   background: #fff;
   border-radius: 1.25rem 1.25rem 0 0;
   max-height: 90vh;
-  display: none;
+  display: flex;
   flex-direction: column;
   box-shadow: 0 -8px 40px rgba(0,0,0,.18);
+  transform: translateY(100%);
+  transition: transform .38s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
+  visibility: hidden;
 }
 .filter-sheet.open {
-  display: flex;
-  animation: sheetSlideUp .38s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-@keyframes sheetSlideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .sheet-handle {

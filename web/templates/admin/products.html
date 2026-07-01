@@ -122,7 +122,8 @@
 
 <!-- Tabela -->
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <table class="w-full text-sm" id="productsTable">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm min-w-[640px]" id="productsTable">
         <thead class="bg-gray-50 text-gray-400 text-xs uppercase tracking-wide border-b border-gray-100">
             <tr>
                 <th class="px-4 py-3 text-left">Produto</th>
@@ -233,6 +234,7 @@
         </tbody>
     </table>
 
+    </div><!-- /overflow-x-auto -->
     <div id="emptyFilter" class="hidden px-4 py-12 text-center text-gray-400 border-t border-gray-50">
         <p class="font-medium">Nenhum produto encontrado com esses filtros.</p>
         <button onclick="resetFilters()" class="text-sm text-black underline mt-1">Limpar filtros</button>
