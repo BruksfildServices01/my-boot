@@ -1,0 +1,25 @@
+{{define "content"}}
+<div class="max-w-sm mx-auto mt-20 bg-white rounded-2xl shadow p-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Entrar no Admin</h1>
+
+    {{if .Error}}
+    <p class="bg-red-50 text-red-600 rounded-lg px-4 py-3 text-sm mb-4">{{.Error}}</p>
+    {{end}}
+
+    <form method="POST" action="/admin/login" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Usuário</label>
+            <input type="text" name="usuario" required autofocus
+                class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Senha</label>
+            <input type="password" name="senha" required
+                class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+        </div>
+        <button class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">
+            Entrar
+        </button>
+    </form>
+</div>
+{{end}}

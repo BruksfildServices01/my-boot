@@ -1,0 +1,40 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>My Boot — Tênis com estilo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+
+  <!-- Faixa de identidade no topo -->
+  <div class="brand-strip"></div>
+
+  <header class="site-header">
+    <a href="/" class="header-logo-link">
+      <img src="/static/img/logo.png" alt="My Boot" class="logo-img">
+    </a>
+    <nav class="header-nav">
+      <a href="/" class="nav-link">Catálogo</a>
+      <a href="/?novos=1" class="nav-link nav-tag nav-tag--new">Novidades</a>
+      <a href="/?promocao=1" class="nav-link nav-tag nav-tag--sale">Promoções</a>
+    </nav>
+  </header>
+
+  <main>{{block "content" .}}{{end}}</main>
+
+  <footer class="site-footer">
+    <p>© 2026 <strong>My Boot</strong> · Tênis com estilo</p>
+    <p style="margin-top:.25rem;font-size:.75rem;opacity:.6;">
+      Atendimento via WhatsApp · Vendas apenas pelo chat
+    </p>
+  </footer>
+
+</body>
+</html>
+{{end}}

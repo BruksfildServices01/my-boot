@@ -1,0 +1,26 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — My Boot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
+        <span class="font-bold text-lg">My Boot · Admin</span>
+        <div class="flex items-center gap-4">
+            <a href="/admin/produtos" class="text-sm text-gray-600 hover:text-black">Produtos</a>
+            <a href="/admin/produtos/novo" class="bg-black text-white text-sm px-4 py-2 rounded-lg">+ Novo</a>
+            <form method="POST" action="/admin/logout">
+                <button class="text-sm text-gray-500 hover:text-red-500">Sair</button>
+            </form>
+        </div>
+    </nav>
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        {{block "content" .}}{{end}}
+    </main>
+</body>
+</html>
+{{end}}

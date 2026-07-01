@@ -1,0 +1,251 @@
+{{define "content"}}
+<div class="product-detail-wrap">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Catálogo</a>
+    <span>›</span>
+    <span>{{.Product.Name}}</span>
+  </nav>
+
+  <div class="product-grid-layout">
+
+    <!-- ── Coluna esquerda: galeria ── -->
+    <div>
+      {{if .Product.Images}}
+      <div class="gallery-main" id="mainImgWrap">
+        <img id="mainImg" src="{{index .Product.Images 0}}" alt="{{.Product.Name}}">
+      </div>
+      {{if gt (len .Product.Images) 1}}
+      <div class="gallery-thumbs" style="margin-top:.625rem;">
+        {{range $i, $url := .Product.Images}}
+        <div class="gallery-thumb {{if eq $i 0}}active{{end}}" onclick="setImg('{{$url}}', this)">
+          <img src="{{$url}}" alt="Foto {{$i}}">
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+      {{else}}
+      <div class="gallery-main" style="display:flex;align-items:center;justify-content:center;">
+        <svg width="64" height="64" fill="none" stroke="#D1D5DB" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+      </div>
+      {{end}}
+    </div>
+
+    <!-- ── Coluna direita: info ── -->
+    <div>
+      <!-- Cabeçalho do produto -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
+        <div>
+          <p style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9CA3AF;margin-bottom:.25rem;">
+            {{.Product.Brand}}
+          </p>
+          <h1 style="font-size:1.5rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;">
+            {{.Product.Name}}
+          </h1>
+          <p style="font-size:.75rem;color:#9CA3AF;margin-top:.25rem;">Cód. {{.Product.Code}}</p>
+        </div>
+        {{if .Product.Featured}}
+        <span style="background:#FEF3C7;color:#92400E;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px;white-space:nowrap;">
+          ⭐ Destaque
+        </span>
+        {{end}}
+      </div>
+
+      <!-- Preço -->
+      <div style="margin-top:1rem;">
+        {{if and .Product.IsSale (gt .Product.SalePrice 0.0)}}
+        <span class="price-tag-sale">{{brl .Product.SalePrice}}</span>
+        <span class="price-original">{{brl .Product.Price}}</span>
+        {{else}}
+        <span class="price-tag">{{brl .Product.Price}}</span>
+        {{end}}
+      </div>
+
+      {{if .Product.Description}}
+      <p style="font-size:.875rem;color:#4B5563;line-height:1.6;margin-top:.875rem;">
+        {{.Product.Description}}
+      </p>
+      {{end}}
+
+      <!-- Seletor de cor -->
+      {{if .ColorMapJSON}}
+      <div style="margin-top:1.5rem;">
+        <div class="section-label">Cor <span id="selectedColorLabel" style="font-weight:400;text-transform:none;letter-spacing:0;color:#374151;"></span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;" id="colorOptions"></div>
+      </div>
+
+      <!-- Seletor de tamanho -->
+      <div style="margin-top:1.25rem;">
+        <div class="section-label">Tamanho <span id="selectedSizeLabel" style="font-weight:400;text-transform:none;letter-spacing:0;color:#374151;"></span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;" id="sizeOptions">
+          <p style="font-size:.8rem;color:#9CA3AF;">Selecione uma cor primeiro</p>
+        </div>
+      </div>
+      {{end}}
+
+      <!-- Status indisponível -->
+      {{if eq .Product.Status "unavailable"}}
+      <div style="margin-top:1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:.75rem;padding:.875rem 1rem;">
+        <p style="font-size:.875rem;color:#DC2626;font-weight:500;">Este produto está indisponível no momento.</p>
+        <p style="font-size:.8rem;color:#EF4444;margin-top:.25rem;">Entre em contato para verificar estoque.</p>
+      </div>
+      {{end}}
+
+      <!-- CTA desktop -->
+      <div style="margin-top:1.75rem;display:none;" class="desktop-cta-wrap">
+        <button class="btn-whatsapp" onclick="buyOnWhatsApp()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.121 1.529 5.855L0 24l6.335-1.502A11.956 11.956 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.894 9.894 0 01-5.048-1.385l-.361-.214-3.762.892.948-3.658-.236-.375A9.86 9.86 0 012.106 12C2.106 6.53 6.53 2.106 12 2.106c5.471 0 9.894 4.424 9.894 9.894 0 5.471-4.423 9.894-9.894 9.894z"/>
+          </svg>
+          Comprar pelo WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Barra fixa no mobile ──────────────────────────── -->
+<div class="mobile-sticky-bar">
+  <div style="flex:1;">
+    <div style="font-size:.7rem;color:#9CA3AF;font-weight:500;">Preço</div>
+    <div style="font-size:1.1rem;font-weight:800;color:#16a34a;letter-spacing:-.02em;">{{brl .Product.Price}}</div>
+  </div>
+  <button class="btn-whatsapp" style="flex:2;padding:.875rem 1rem;font-size:.95rem;" onclick="buyOnWhatsApp()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.121 1.529 5.855L0 24l6.335-1.502A11.956 11.956 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.894 9.894 0 01-5.048-1.385l-.361-.214-3.762.892.948-3.658-.236-.375A9.86 9.86 0 012.106 12C2.106 6.53 6.53 2.106 12 2.106c5.471 0 9.894 4.424 9.894 9.894 0 5.471-4.423 9.894-9.894 9.894z"/>
+    </svg>
+    Comprar pelo WhatsApp
+  </button>
+</div>
+
+<script>
+// ── Dados do produto ──────────────────────────────────────────
+const colorMap = {{.ColorMapJSON}};
+const prod = {
+  name:  "{{.Product.Name}}",
+  brand: "{{.Product.Brand}}",
+  model: "{{.Product.Model}}",
+  price: "{{brl .Product.Price}}",
+  code:  "{{.Product.Code}}",
+  slug:  "{{.Product.Slug}}",
+};
+const whatsapp = "{{.WhatsAppNumber}}";
+const siteURL  = "{{.SiteURL}}";
+
+let selectedColor = "";
+let selectedSize  = "";
+
+// ── Monta botões de cor ───────────────────────────────────────
+const colorContainer = document.getElementById("colorOptions");
+if (colorContainer) {
+  Object.keys(colorMap).forEach(color => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = color;
+    btn.className = "color-btn";
+    btn.dataset.color = color;
+    btn.onclick = () => selectColor(color, btn);
+    colorContainer.appendChild(btn);
+  });
+}
+
+function selectColor(color, btn) {
+  selectedColor = color;
+  selectedSize  = "";
+
+  document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+
+  const label = document.getElementById("selectedColorLabel");
+  if (label) label.textContent = "· " + color;
+
+  renderSizes(color);
+}
+
+function renderSizes(color) {
+  const container = document.getElementById("sizeOptions");
+  container.innerHTML = "";
+  const variants = colorMap[color] || [];
+
+  variants.forEach(v => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = v.Size;
+    btn.className = "size-btn";
+    btn.disabled = !v.Available;
+    btn.onclick = () => {
+      if (!v.Available) return;
+      selectedSize = v.Size;
+      document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      const label = document.getElementById("selectedSizeLabel");
+      if (label) label.textContent = "· " + v.Size;
+    };
+    container.appendChild(btn);
+  });
+}
+
+// ── Galeria ───────────────────────────────────────────────────
+function setImg(url, thumb) {
+  const main = document.getElementById("mainImg");
+  main.classList.remove("loaded");
+  main.src = url;
+  main.addEventListener('load', () => main.classList.add('loaded'), { once: true });
+  document.querySelectorAll(".gallery-thumb").forEach(t => t.classList.remove("active"));
+  thumb.classList.add("active");
+}
+
+// Fade-in em todas as imagens ao carregar
+document.querySelectorAll('img').forEach(img => {
+  if (img.complete) img.classList.add('loaded');
+  else img.addEventListener('load', () => img.classList.add('loaded'));
+});
+
+// ── Mensagem de erro elegante (sem alert) ────────────────────
+function showError(msg) {
+  document.querySelectorAll('.buy-error').forEach(el => el.remove());
+  const el = document.createElement('div');
+  el.className = 'buy-error';
+  el.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>' + msg;
+  const anchor = document.querySelector('.desktop-cta-wrap') || document.querySelector('.mobile-sticky-bar');
+  if (anchor) anchor.prepend(el);
+  setTimeout(() => {
+    el.classList.add('fade-out');
+    setTimeout(() => el.remove(), 300);
+  }, 2800);
+}
+
+// ── WhatsApp ──────────────────────────────────────────────────
+function buyOnWhatsApp() {
+  if (colorMap && Object.keys(colorMap).length > 0) {
+    if (!selectedColor) { showError('Escolha uma cor para continuar.'); return; }
+    if (!selectedSize)  { showError('Escolha um tamanho para continuar.'); return; }
+  }
+
+  const link = siteURL + "/produto/" + prod.slug;
+  const colorLine = selectedColor ? "\nCor: " + selectedColor : "";
+  const sizeLine  = selectedSize  ? "\nTamanho: " + selectedSize : "";
+
+  const msg =
+    "Olá! Gostaria de comprar este tênis:\n\n" +
+    "Produto: " + prod.name + "\n" +
+    "Marca: " + prod.brand + "\n" +
+    "Modelo: " + prod.model +
+    colorLine +
+    sizeLine + "\n" +
+    "Preço: " + prod.price + "\n" +
+    "Código: " + prod.code + "\n" +
+    "Link: " + link + "\n\n" +
+    "Ainda está disponível?";
+
+  window.open("https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
+}
+</script>
+
+{{end}}

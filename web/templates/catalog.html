@@ -1,0 +1,363 @@
+{{define "content"}}
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<div class="catalog-hero">
+  <div class="catalog-hero__inner">
+    <img src="/static/img/logo.png" alt="My Boot" class="hero-logo loaded">
+    <h1 class="hero-title">Tênis com estilo</h1>
+    <p class="hero-sub">Encontre o par perfeito e peça direto no WhatsApp</p>
+  </div>
+</div>
+
+<!-- ── Corpo ─────────────────────────────────────────────── -->
+<div class="catalog-body">
+
+  <!-- Busca -->
+  <div class="search-wrap">
+    <div style="position:relative;flex:1;">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+      </svg>
+      <form id="searchForm" method="GET" action="/">
+        {{if .Filter.Brand}}<input type="hidden" name="marca" value="{{.Filter.Brand}}">{{end}}
+        {{if .Filter.Color}}<input type="hidden" name="cor" value="{{.Filter.Color}}">{{end}}
+        {{if .Filter.Size}}<input type="hidden" name="tamanho" value="{{.Filter.Size}}">{{end}}
+        {{if .Filter.OnlyAvailable}}<input type="hidden" name="disponiveis" value="1">{{end}}
+        {{if .Filter.OnlyNew}}<input type="hidden" name="novos" value="1">{{end}}
+        {{if .Filter.OnlySale}}<input type="hidden" name="promocao" value="1">{{end}}
+        {{if .Filter.OnlyLimited}}<input type="hidden" name="limitado" value="1">{{end}}
+        {{if gt .Filter.MinPrice 0.0}}<input type="hidden" name="preco_min" value="{{printf "%.0f" .Filter.MinPrice}}">{{end}}
+        {{if gt .Filter.MaxPrice 0.0}}<input type="hidden" name="preco_max" value="{{printf "%.0f" .Filter.MaxPrice}}">{{end}}
+        <input type="search" name="q" value="{{.Filter.Search}}"
+          placeholder="Buscar marca, modelo…"
+          class="search-bar"
+          onchange="this.form.submit()">
+      </form>
+    </div>
+    <!-- Botão filtros (só mobile) -->
+    <button class="filter-toggle-btn {{if gt .ActiveFilters 0}}active{{end}}"
+      onclick="openFilters()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4h18M6 10h12M9 16h6"/>
+      </svg>
+      Filtros{{if gt .ActiveFilters 0}}&nbsp;<span class="filter-count">{{.ActiveFilters}}</span>{{end}}
+    </button>
+  </div>
+
+  <!-- ── Filtros ativos (chips removíveis) ─────────────── -->
+  {{if gt .ActiveFilters 0}}
+  <div class="active-chips">
+    {{if .Filter.Brand}}
+    <a href="javascript:removeFilter('marca')" class="active-chip">{{.Filter.Brand}} <span class="active-chip__x">×</span></a>
+    {{end}}
+    {{if .Filter.Color}}
+    <a href="javascript:removeFilter('cor')" class="active-chip">{{.Filter.Color}} <span class="active-chip__x">×</span></a>
+    {{end}}
+    {{if .Filter.Size}}
+    <a href="javascript:removeFilter('tamanho')" class="active-chip">Nº {{.Filter.Size}} <span class="active-chip__x">×</span></a>
+    {{end}}
+    {{if .Filter.OnlyNew}}<a href="javascript:removeFilter('novos')" class="active-chip">🆕 Novidades <span class="active-chip__x">×</span></a>{{end}}
+    {{if .Filter.OnlySale}}<a href="javascript:removeFilter('promocao')" class="active-chip">🔥 Promoção <span class="active-chip__x">×</span></a>{{end}}
+    {{if .Filter.OnlyLimited}}<a href="javascript:removeFilter('limitado')" class="active-chip">⚡ Limitado <span class="active-chip__x">×</span></a>{{end}}
+    {{if .Filter.OnlyAvailable}}<a href="javascript:removeFilter('disponiveis')" class="active-chip">✅ Disponíveis <span class="active-chip__x">×</span></a>{{end}}
+    {{if gt .Filter.MinPrice 0.0}}<a href="javascript:removeFilter('preco_min')" class="active-chip">Acima de R${{printf "%.0f" .Filter.MinPrice}} <span class="active-chip__x">×</span></a>{{end}}
+    {{if gt .Filter.MaxPrice 0.0}}<a href="javascript:removeFilter('preco_max')" class="active-chip">Até R${{printf "%.0f" .Filter.MaxPrice}} <span class="active-chip__x">×</span></a>{{end}}
+    <a href="/" style="font-size:.75rem;color:var(--muted);text-decoration:underline;align-self:center;">Limpar tudo</a>
+  </div>
+  {{end}}
+
+  <!-- ── Barra de filtros DESKTOP ──────────────────────── -->
+  <form id="desktopFilterForm" method="GET" action="/" class="desktop-filter-bar">
+    {{if .Filter.Search}}<input type="hidden" name="q" value="{{.Filter.Search}}">{{end}}
+
+    <!-- Categoria -->
+    <label class="pill pill--new {{if .Filter.OnlyNew}}active{{end}}">
+      <input type="checkbox" name="novos" value="1" {{if .Filter.OnlyNew}}checked{{end}} hidden onchange="this.form.submit()">
+      🆕 Novidades
+    </label>
+    <label class="pill pill--sale {{if .Filter.OnlySale}}active{{end}}">
+      <input type="checkbox" name="promocao" value="1" {{if .Filter.OnlySale}}checked{{end}} hidden onchange="this.form.submit()">
+      🔥 Promoção
+    </label>
+    <label class="pill pill--limited {{if .Filter.OnlyLimited}}active{{end}}">
+      <input type="checkbox" name="limitado" value="1" {{if .Filter.OnlyLimited}}checked{{end}} hidden onchange="this.form.submit()">
+      ⚡ Limitado
+    </label>
+    <label class="pill pill--avail {{if .Filter.OnlyAvailable}}active{{end}}">
+      <input type="checkbox" name="disponiveis" value="1" {{if .Filter.OnlyAvailable}}checked{{end}} hidden onchange="this.form.submit()">
+      ✅ Disponíveis
+    </label>
+
+    <div class="filter-divider"></div>
+
+    <!-- Marca -->
+    <select name="marca" class="filter-select {{if .Filter.Brand}}active-filter{{end}}" onchange="this.form.submit()">
+      <option value="">Marca</option>
+      {{range .Brands}}
+      <option value="{{.}}" {{if eq . $.Filter.Brand}}selected{{end}}>{{.}}</option>
+      {{end}}
+    </select>
+
+    <!-- Tamanho -->
+    <select name="tamanho" class="filter-select {{if .Filter.Size}}active-filter{{end}}" onchange="this.form.submit()">
+      <option value="">Tamanho</option>
+      {{range .Sizes}}
+      <option value="{{.}}" {{if eq . $.Filter.Size}}selected{{end}}>{{.}}</option>
+      {{end}}
+    </select>
+
+    <!-- Cor -->
+    <select name="cor" class="filter-select {{if .Filter.Color}}active-filter{{end}}" onchange="this.form.submit()">
+      <option value="">Cor</option>
+      {{range .Colors}}
+      <option value="{{.}}" {{if eq . $.Filter.Color}}selected{{end}}>{{.}}</option>
+      {{end}}
+    </select>
+
+    <div class="filter-divider"></div>
+
+    <!-- Faixa de preço -->
+    <div class="price-range">
+      <input type="number" name="preco_min" placeholder="R$ Mín"
+        value="{{if gt .Filter.MinPrice 0.0}}{{printf "%.0f" .Filter.MinPrice}}{{end}}"
+        class="price-input" onchange="this.form.submit()">
+      <span style="color:var(--muted);font-size:.75rem;">–</span>
+      <input type="number" name="preco_max" placeholder="R$ Máx"
+        value="{{if gt .Filter.MaxPrice 0.0}}{{printf "%.0f" .Filter.MaxPrice}}{{end}}"
+        class="price-input" onchange="this.form.submit()">
+    </div>
+  </form>
+
+  <!-- ── Contagem ───────────────────────────────────────── -->
+  <p class="results-count">
+    {{len .Products}} {{if eq (len .Products) 1}}produto{{else}}produtos{{end}}
+  </p>
+
+  <!-- ── Grade de produtos ──────────────────────────────── -->
+  <div class="product-grid">
+    {{range .Products}}
+    <a href="/produto/{{.Slug}}" class="product-card{{if .Featured}} product-card--featured{{end}}">
+      <div class="card-image">
+        <div class="card-badges">
+          {{if .Featured}}<span class="badge badge--featured">⭐ Destaque</span>{{end}}
+          {{if .IsNew}}<span class="badge badge--new">Novo</span>{{end}}
+          {{if .IsSale}}<span class="badge badge--sale">Oferta</span>{{end}}
+          {{if .IsLimited}}<span class="badge badge--limited">Limitado</span>{{end}}
+        </div>
+        {{if eq .Status "unavailable"}}
+        <div class="badge-unavailable"><span>Indisponível</span></div>
+        {{end}}
+        {{if .Images}}
+        <img src="{{index .Images 0}}" alt="{{.Name}}" loading="lazy">
+        {{else}}
+        <div class="card-no-image">
+          <svg width="40" height="40" fill="none" stroke="#D1D5DB" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        {{end}}
+      </div>
+      <div class="card-body">
+        <div class="card-brand">{{.Brand}}</div>
+        <div class="card-name">{{.Name}}</div>
+        {{if and .IsSale (gt .SalePrice 0.0)}}
+        <div style="display:flex;align-items:baseline;gap:.375rem;margin-top:.4rem;">
+          <span class="card-price-sale">{{brl .SalePrice}}</span>
+          <span class="card-price-original">{{brl .Price}}</span>
+        </div>
+        {{else}}
+        <div class="card-price">{{brl .Price}}</div>
+        {{end}}
+      </div>
+    </a>
+    {{else}}
+    <div class="empty-state">
+      <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p style="font-size:1rem;font-weight:600;color:#374151;">Nenhum produto encontrado</p>
+      <p>Tente ajustar os filtros.</p>
+      <a href="/" style="margin-top:.5rem;font-weight:600;text-decoration:underline;">Ver todos</a>
+    </div>
+    {{end}}
+  </div>
+</div>
+
+<!-- ── BOTTOM SHEET (mobile) ─────────────────────────────── -->
+<div class="filter-overlay" id="filterOverlay" onclick="closeFilters()"></div>
+
+<div class="filter-sheet" id="filterSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <h3>Filtros</h3>
+    <button class="sheet-close" onclick="closeFilters()">✕</button>
+  </div>
+
+  <div class="sheet-body">
+
+    <!-- Categoria -->
+    <div class="sheet-section">
+      <div class="sheet-section-title">Categoria</div>
+      <div class="pill-grid">
+        <label class="pill pill--new {{if .Filter.OnlyNew}}active{{end}}" id="pill-novos">
+          <input type="checkbox" id="cb-novos" hidden {{if .Filter.OnlyNew}}checked{{end}}>
+          🆕 Novidades
+        </label>
+        <label class="pill pill--sale {{if .Filter.OnlySale}}active{{end}}" id="pill-promocao">
+          <input type="checkbox" id="cb-promocao" hidden {{if .Filter.OnlySale}}checked{{end}}>
+          🔥 Promoção
+        </label>
+        <label class="pill pill--limited {{if .Filter.OnlyLimited}}active{{end}}" id="pill-limitado">
+          <input type="checkbox" id="cb-limitado" hidden {{if .Filter.OnlyLimited}}checked{{end}}>
+          ⚡ Limitado
+        </label>
+        <label class="pill pill--avail {{if .Filter.OnlyAvailable}}active{{end}}" id="pill-disponiveis">
+          <input type="checkbox" id="cb-disponiveis" hidden {{if .Filter.OnlyAvailable}}checked{{end}}>
+          ✅ Disponíveis
+        </label>
+      </div>
+    </div>
+
+    <!-- Marca -->
+    {{if .Brands}}
+    <div class="sheet-section">
+      <div class="sheet-section-title">Marca</div>
+      <div class="pill-grid" id="brandPills">
+        <span class="pill {{if eq .Filter.Brand ""}}active{{end}}" onclick="selectPill(this,'brand','')">Todas</span>
+        {{range .Brands}}
+        <span class="pill {{if eq . $.Filter.Brand}}active{{end}}" onclick="selectPill(this,'brand','{{.}}')">{{.}}</span>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
+
+    <!-- Tamanho -->
+    {{if .Sizes}}
+    <div class="sheet-section">
+      <div class="sheet-section-title">Tamanho</div>
+      <div class="size-grid" id="sizePills">
+        {{range .Sizes}}
+        <span class="size-pill {{if eq . $.Filter.Size}}active{{end}}" onclick="selectPill(this,'size','{{.}}')">{{.}}</span>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
+
+    <!-- Cor -->
+    {{if .Colors}}
+    <div class="sheet-section">
+      <div class="sheet-section-title">Cor</div>
+      <div class="pill-grid" id="colorPills">
+        <span class="pill {{if eq .Filter.Color ""}}active{{end}}" onclick="selectPill(this,'color','')">Todas</span>
+        {{range .Colors}}
+        <span class="pill {{if eq . $.Filter.Color}}active{{end}}" onclick="selectPill(this,'color','{{.}}')">{{.}}</span>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
+
+    <!-- Preço -->
+    <div class="sheet-section">
+      <div class="sheet-section-title">Faixa de preço</div>
+      <div class="price-range" style="gap:.625rem;">
+        <input type="number" id="sheetMin" placeholder="R$ Mín"
+          value="{{if gt .Filter.MinPrice 0.0}}{{printf "%.0f" .Filter.MinPrice}}{{end}}"
+          class="price-input" style="width:100%;flex:1;">
+        <span style="color:var(--muted);font-size:.8rem;flex-shrink:0;">até</span>
+        <input type="number" id="sheetMax" placeholder="R$ Máx"
+          value="{{if gt .Filter.MaxPrice 0.0}}{{printf "%.0f" .Filter.MaxPrice}}{{end}}"
+          class="price-input" style="width:100%;flex:1;">
+      </div>
+    </div>
+
+  </div><!-- /sheet-body -->
+
+  <div class="sheet-footer">
+    <a href="/" class="sheet-clear">Limpar</a>
+    <button class="sheet-apply" onclick="applySheetFilters()">Ver produtos</button>
+  </div>
+</div>
+
+<script>
+// ── Estado atual dos filtros ──────────────────────────────
+const currentQ    = '{{.Filter.Search}}';
+const activeFilters = {
+  brand:       '{{.Filter.Brand}}',
+  size:        '{{.Filter.Size}}',
+  color:       '{{.Filter.Color}}',
+};
+
+// ── Bottom sheet ──────────────────────────────────────────
+function openFilters() {
+  const overlay = document.getElementById('filterOverlay');
+  const sheet   = document.getElementById('filterSheet');
+  overlay.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => {
+    overlay.classList.add('open');
+    sheet.classList.add('open');
+  });
+}
+function closeFilters() {
+  const overlay = document.getElementById('filterOverlay');
+  const sheet   = document.getElementById('filterSheet');
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => overlay.classList.remove('visible'), 380);
+}
+
+// ── Seleção de pills no sheet ─────────────────────────────
+function selectPill(el, group, value) {
+  const container = el.parentElement;
+  container.querySelectorAll('.pill,.size-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  activeFilters[group] = value;
+}
+
+// ── Checkboxes com toggle de classe active ────────────────
+['novos','promocao','limitado','disponiveis'].forEach(id => {
+  const cb   = document.getElementById('cb-' + id);
+  const pill = document.getElementById('pill-' + id);
+  if (!cb || !pill) return;
+  pill.addEventListener('click', () => {
+    cb.checked = !cb.checked;
+    pill.classList.toggle('active', cb.checked);
+  });
+});
+
+// ── Aplicar todos os filtros do sheet ─────────────────────
+function applySheetFilters() {
+  const params = new URLSearchParams();
+  if (currentQ)                  params.set('q',          currentQ);
+  if (activeFilters.brand)       params.set('marca',      activeFilters.brand);
+  if (activeFilters.size)        params.set('tamanho',    activeFilters.size);
+  if (activeFilters.color)       params.set('cor',        activeFilters.color);
+  if (document.getElementById('cb-novos')?.checked)        params.set('novos',       '1');
+  if (document.getElementById('cb-promocao')?.checked)     params.set('promocao',    '1');
+  if (document.getElementById('cb-limitado')?.checked)     params.set('limitado',    '1');
+  if (document.getElementById('cb-disponiveis')?.checked)  params.set('disponiveis', '1');
+  const min = document.getElementById('sheetMin')?.value;
+  const max = document.getElementById('sheetMax')?.value;
+  if (min) params.set('preco_min', min);
+  if (max) params.set('preco_max', max);
+  window.location.href = '/?' + params.toString();
+}
+
+// ── Remover filtro individual (chips) ─────────────────────
+function removeFilter(key) {
+  const params = new URLSearchParams(window.location.search);
+  params.delete(key);
+  window.location.href = '/?' + params.toString();
+}
+
+// ── Fade-in das imagens ───────────────────────────────────
+document.querySelectorAll('img').forEach(img => {
+  if (img.complete) img.classList.add('loaded');
+  else img.addEventListener('load', () => img.classList.add('loaded'));
+});
+</script>
+{{end}}
