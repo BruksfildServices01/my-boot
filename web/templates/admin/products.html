@@ -4,36 +4,32 @@
 <div class="flex items-center justify-between mb-5">
     <h1 class="text-2xl font-bold">Produtos</h1>
     <a href="/admin/produtos/novo"
-        class="bg-black text-white px-5 py-2 rounded-xl font-semibold text-sm hover:bg-gray-800 transition">
-        + Novo produto
+        class="bg-black text-white px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-800 transition flex items-center gap-1.5">
+        <span class="text-base leading-none">+</span> Novo
     </a>
 </div>
 
 {{if .Flash}}
-<div class="bg-green-50 text-green-700 border border-green-200 rounded-xl px-4 py-3 mb-5 text-sm font-medium">
+<div class="bg-green-50 text-green-700 border border-green-200 rounded-xl px-4 py-3 mb-4 text-sm font-medium">
     ✅ {{.Flash}}
 </div>
 {{end}}
 
 <!-- Cards de resumo -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-gray-300 transition"
-        onclick="applyFilter('status','')">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-gray-300 transition-colors" onclick="applyFilter('status','')">
         <div class="text-2xl font-black text-gray-900">{{.Stats.Total}}</div>
-        <div class="text-xs text-gray-500 font-medium mt-0.5">Total de produtos</div>
+        <div class="text-xs text-gray-500 font-medium mt-0.5">Total</div>
     </div>
-    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-green-300 transition"
-        onclick="applyFilter('status','available')">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-green-300 transition-colors" onclick="applyFilter('status','available')">
         <div class="text-2xl font-black text-green-600">{{.Stats.Available}}</div>
         <div class="text-xs text-gray-500 font-medium mt-0.5">Disponíveis</div>
     </div>
-    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-red-300 transition"
-        onclick="applyFilter('status','unavailable')">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-red-300 transition-colors" onclick="applyFilter('status','unavailable')">
         <div class="text-2xl font-black text-red-400">{{.Stats.Unavailable}}</div>
         <div class="text-xs text-gray-500 font-medium mt-0.5">Indisponíveis</div>
     </div>
-    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-orange-300 transition"
-        onclick="applyFilter('tag','sale')">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm cursor-pointer hover:border-orange-300 transition-colors" onclick="applyFilter('tag','sale')">
         <div class="text-2xl font-black text-orange-500">{{.Stats.OnSale}}</div>
         <div class="text-xs text-gray-500 font-medium mt-0.5">Em promoção</div>
     </div>
@@ -41,7 +37,6 @@
 
 <!-- Busca + Filtros -->
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-4 space-y-3">
-
     <!-- Busca -->
     <div class="relative">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
@@ -50,65 +45,38 @@
                 d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
         </svg>
         <input id="searchInput" type="search"
-            placeholder="Buscar por código (NIK001), nome ou marca…"
+            placeholder="Código (NIK001), nome ou marca…"
             class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"
             oninput="applyFilter('search', this.value)">
     </div>
 
-    <!-- Filtros rápidos -->
-    <div class="flex flex-wrap gap-2">
-        <!-- Status -->
-        <button onclick="applyFilter('status','')"
-            class="filter-btn active text-xs" data-group="status" data-val="">
-            Todos
-        </button>
-        <button onclick="applyFilter('status','available')"
-            class="filter-btn text-xs" data-group="status" data-val="available">
-            ✅ Disponíveis
-        </button>
-        <button onclick="applyFilter('status','unavailable')"
-            class="filter-btn text-xs" data-group="status" data-val="unavailable">
-            ❌ Indisponíveis
-        </button>
+    <!-- Linha 1: Status -->
+    <div class="flex gap-1.5 flex-wrap">
+        <button onclick="applyFilter('status','')"    class="filter-btn active text-xs" data-group="status" data-val="">Todos</button>
+        <button onclick="applyFilter('status','available')"   class="filter-btn text-xs" data-group="status" data-val="available">✅ Disponíveis</button>
+        <button onclick="applyFilter('status','unavailable')" class="filter-btn text-xs" data-group="status" data-val="unavailable">❌ Indisponíveis</button>
+    </div>
 
-        <div class="w-px bg-gray-200 self-stretch mx-1"></div>
+    <!-- Linha 2: Tags + Marca + Ordem -->
+    <div class="flex gap-1.5 flex-wrap items-center">
+        <button onclick="applyFilter('tag','featured')" class="filter-btn text-xs" data-group="tag" data-val="featured">⭐ Destaque</button>
+        <button onclick="applyFilter('tag','new')"      class="filter-btn text-xs" data-group="tag" data-val="new">🆕 Novo</button>
+        <button onclick="applyFilter('tag','sale')"     class="filter-btn text-xs" data-group="tag" data-val="sale">🔥 Promoção</button>
+        <button onclick="applyFilter('tag','limited')"  class="filter-btn text-xs" data-group="tag" data-val="limited">⚡ Limitado</button>
 
-        <!-- Tags -->
-        <button onclick="applyFilter('tag','featured')"
-            class="filter-btn text-xs" data-group="tag" data-val="featured">
-            ⭐ Destaque
-        </button>
-        <button onclick="applyFilter('tag','new')"
-            class="filter-btn text-xs" data-group="tag" data-val="new">
-            🆕 Novidade
-        </button>
-        <button onclick="applyFilter('tag','sale')"
-            class="filter-btn text-xs" data-group="tag" data-val="sale">
-            🔥 Promoção
-        </button>
-        <button onclick="applyFilter('tag','limited')"
-            class="filter-btn text-xs" data-group="tag" data-val="limited">
-            ⚡ Limitado
-        </button>
+        <div class="w-px bg-gray-200 self-stretch hidden sm:block"></div>
 
         {{if .Brands}}
-        <div class="w-px bg-gray-200 self-stretch mx-1"></div>
-
-        <!-- Marcas -->
         <select id="brandFilter" onchange="applyFilter('brand', this.value)"
             class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer">
-            <option value="">Todas as marcas</option>
-            {{range .Brands}}
-            <option value="{{lower .}}">{{.}}</option>
-            {{end}}
+            <option value="">Marca</option>
+            {{range .Brands}}<option value="{{lower .}}">{{.}}</option>{{end}}
         </select>
         {{end}}
 
-        <!-- Ordenação -->
-        <div class="w-px bg-gray-200 self-stretch mx-1"></div>
         <select id="sortFilter" onchange="applySort(this.value)"
             class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer">
-            <option value="">Ordenar por…</option>
+            <option value="">Ordenar</option>
             <option value="name-az">Nome A→Z</option>
             <option value="name-za">Nome Z→A</option>
             <option value="price-asc">Preço ↑</option>
@@ -116,19 +84,108 @@
         </select>
     </div>
 
-    <!-- Contagem de resultados -->
     <p id="resultCount" class="text-xs text-gray-400"></p>
 </div>
 
-<!-- Tabela -->
-<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm min-w-[640px]" id="productsTable">
+<!-- ── MOBILE: Lista de cards ─────────────────────────────── -->
+<div class="md:hidden space-y-2" id="mobileList">
+    {{range .Products}}
+    <div class="product-row bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
+        data-name="{{lower .Name}}" data-code="{{lower .Code}}" data-brand="{{lower .Brand}}"
+        data-status="{{.Status}}"
+        data-featured="{{if .Featured}}1{{else}}0{{end}}"
+        data-new="{{if .IsNew}}1{{else}}0{{end}}"
+        data-sale="{{if .IsSale}}1{{else}}0{{end}}"
+        data-limited="{{if .IsLimited}}1{{else}}0{{end}}"
+        data-price="{{.Price}}">
+
+        <div class="flex gap-3">
+            <!-- Foto -->
+            {{if .Images}}
+            <img src="{{index .Images 0}}" loading="lazy"
+                class="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-gray-100">
+            {{else}}
+            <div class="w-16 h-16 bg-gray-100 rounded-xl flex-shrink-0 flex items-center justify-center">
+                <svg width="20" height="20" fill="none" stroke="#D1D5DB" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            {{end}}
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <div class="font-semibold text-sm text-gray-900 truncate">{{.Name}}</div>
+                        <div class="text-xs text-gray-400 mt-0.5">{{.Brand}}</div>
+                    </div>
+                    <span class="font-mono text-xs font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md flex-shrink-0">{{.Code}}</span>
+                </div>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-1 mt-1.5">
+                    {{if .Featured}}<span class="text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-full font-semibold">⭐</span>{{end}}
+                    {{if .IsNew}}<span class="text-xs bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded-full font-semibold">🆕</span>{{end}}
+                    {{if .IsSale}}<span class="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-semibold">🔥</span>{{end}}
+                    {{if .IsLimited}}<span class="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-semibold">⚡</span>{{end}}
+                </div>
+
+                <!-- Preço + Status -->
+                <div class="flex items-center justify-between mt-2">
+                    {{if and .IsSale (gt .SalePrice 0.0)}}
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-red-500 text-sm">{{brl .SalePrice}}</span>
+                        <span class="text-xs text-gray-400 line-through">{{brl .Price}}</span>
+                    </div>
+                    {{else}}
+                    <span class="font-bold text-sm text-gray-900">{{brl .Price}}</span>
+                    {{end}}
+
+                    {{if eq .Status "available"}}
+                    <span class="inline-flex items-center gap-1 text-xs text-green-700 font-semibold">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Disponível
+                    </span>
+                    {{else}}
+                    <span class="inline-flex items-center gap-1 text-xs text-gray-400 font-semibold">
+                        <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span> Indisponível
+                    </span>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+            <a href="/admin/produtos/{{.ID}}/editar"
+                class="flex-1 text-center text-sm font-semibold text-gray-700 border border-gray-200 rounded-xl py-2 hover:bg-gray-50 transition">
+                ✏️ Editar
+            </a>
+            <form method="POST" action="/admin/produtos/{{.ID}}/deletar"
+                onsubmit="return confirm('Remover {{.Name}}?')" class="flex-1">
+                <button type="submit"
+                    class="w-full text-sm font-semibold text-red-400 border border-red-100 rounded-xl py-2 hover:bg-red-50 transition">
+                    🗑️ Remover
+                </button>
+            </form>
+        </div>
+    </div>
+    {{else}}
+    <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center text-gray-400">
+        <p class="font-medium mb-1">Nenhum produto ainda.</p>
+        <a href="/admin/produtos/novo" class="text-sm text-black underline">Criar primeiro produto</a>
+    </div>
+    {{end}}
+</div>
+
+<!-- ── DESKTOP: Tabela ────────────────────────────────────── -->
+<div class="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm" id="productsTable">
         <thead class="bg-gray-50 text-gray-400 text-xs uppercase tracking-wide border-b border-gray-100">
             <tr>
                 <th class="px-4 py-3 text-left">Produto</th>
                 <th class="px-4 py-3 text-left">Código</th>
-                <th class="px-4 py-3 text-left hidden md:table-cell">Tags</th>
+                <th class="px-4 py-3 text-left">Tags</th>
                 <th class="px-4 py-3 text-right">Preço</th>
                 <th class="px-4 py-3 text-center">Status</th>
                 <th class="px-4 py-3 text-right">Ações</th>
@@ -137,9 +194,7 @@
         <tbody id="productsBody">
         {{range .Products}}
         <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors product-row"
-            data-name="{{lower .Name}}"
-            data-code="{{lower .Code}}"
-            data-brand="{{lower .Brand}}"
+            data-name="{{lower .Name}}" data-code="{{lower .Code}}" data-brand="{{lower .Brand}}"
             data-status="{{.Status}}"
             data-featured="{{if .Featured}}1{{else}}0{{end}}"
             data-new="{{if .IsNew}}1{{else}}0{{end}}"
@@ -168,12 +223,10 @@
             </td>
 
             <td class="px-4 py-3">
-                <span class="font-mono text-xs font-bold bg-gray-100 text-gray-700 px-2 py-1 rounded-md tracking-wide">
-                    {{.Code}}
-                </span>
+                <span class="font-mono text-xs font-bold bg-gray-100 text-gray-700 px-2 py-1 rounded-md">{{.Code}}</span>
             </td>
 
-            <td class="px-4 py-3 hidden md:table-cell">
+            <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-1">
                     {{if .Featured}}<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-semibold">⭐ Destaque</span>{{end}}
                     {{if .IsNew}}<span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full font-semibold">🆕 Novo</span>{{end}}
@@ -189,20 +242,18 @@
                     <span class="text-xs text-gray-400 line-through">{{brl .Price}}</span>
                 </div>
                 {{else}}
-                <span class="font-semibold text-gray-800">{{brl .Price}}</span>
+                <span class="font-semibold">{{brl .Price}}</span>
                 {{end}}
             </td>
 
             <td class="px-4 py-3 text-center">
                 {{if eq .Status "available"}}
                 <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full text-xs font-semibold">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                    Disponível
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Disponível
                 </span>
                 {{else}}
                 <span class="inline-flex items-center gap-1 bg-gray-50 text-gray-400 border border-gray-200 px-2.5 py-1 rounded-full text-xs font-semibold">
-                    <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
-                    Indisponível
+                    <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span> Indisponível
                 </span>
                 {{end}}
             </td>
@@ -210,13 +261,13 @@
             <td class="px-4 py-3 text-right">
                 <div class="flex items-center justify-end gap-2">
                     <a href="/admin/produtos/{{.ID}}/editar"
-                        class="text-xs font-semibold text-gray-600 hover:text-black border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg transition-colors bg-white">
+                        class="text-xs font-semibold text-gray-600 hover:text-black border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg transition bg-white">
                         Editar
                     </a>
                     <form method="POST" action="/admin/produtos/{{.ID}}/deletar"
                         onsubmit="return confirm('Remover {{.Name}}?')">
                         <button type="submit"
-                            class="text-xs font-semibold text-red-400 hover:text-red-600 border border-red-100 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors bg-white">
+                            class="text-xs font-semibold text-red-400 hover:text-red-600 border border-red-100 hover:border-red-300 px-3 py-1.5 rounded-lg transition bg-white">
                             Remover
                         </button>
                     </form>
@@ -234,9 +285,8 @@
         </tbody>
     </table>
 
-    </div><!-- /overflow-x-auto -->
     <div id="emptyFilter" class="hidden px-4 py-12 text-center text-gray-400 border-t border-gray-50">
-        <p class="font-medium">Nenhum produto encontrado com esses filtros.</p>
+        <p class="font-medium">Nenhum produto encontrado.</p>
         <button onclick="resetFilters()" class="text-sm text-black underline mt-1">Limpar filtros</button>
     </div>
 </div>
@@ -251,6 +301,7 @@
     cursor: pointer;
     transition: all .15s;
     color: #6B7280;
+    white-space: nowrap;
 }
 .filter-btn:hover { border-color: #9CA3AF; color: #111; }
 .filter-btn.active { background: #111827; color: #fff; border-color: #111827; }
@@ -265,7 +316,6 @@ function applyFilter(type, value) {
         state.search = value.toLowerCase().trim();
     } else if (type === 'status') {
         state.status = state.status === value ? '' : value;
-        // atualiza visual dos botões de status
         document.querySelectorAll('[data-group="status"]').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.val === state.status);
         });
@@ -280,17 +330,16 @@ function applyFilter(type, value) {
     renderTable();
 }
 
-function applySort(mode) {
-    sortMode = mode;
-    renderTable();
-}
+function applySort(mode) { sortMode = mode; renderTable(); }
 
 function resetFilters() {
     state.search = ''; state.status = ''; state.tag = ''; state.brand = '';
     sortMode = '';
     document.getElementById('searchInput').value = '';
-    document.getElementById('brandFilter').value = '';
-    document.getElementById('sortFilter').value = '';
+    const bf = document.getElementById('brandFilter');
+    const sf = document.getElementById('sortFilter');
+    if (bf) bf.value = '';
+    if (sf) sf.value = '';
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.val === '');
     });
@@ -306,7 +355,7 @@ function renderTable() {
         const matchSearch = !state.search || text.includes(state.search);
         const matchStatus = !state.status || row.dataset.status === state.status;
         const matchBrand  = !state.brand  || row.dataset.brand.includes(state.brand);
-        let   matchTag    = true;
+        let matchTag = true;
         if (state.tag === 'featured') matchTag = row.dataset.featured === '1';
         if (state.tag === 'new')      matchTag = row.dataset.new === '1';
         if (state.tag === 'sale')     matchTag = row.dataset.sale === '1';
@@ -317,28 +366,34 @@ function renderTable() {
         if (show) visible.push(row);
     });
 
-    // Ordenação
     if (sortMode && visible.length > 1) {
-        const tbody = document.getElementById('productsBody');
-        visible.sort((a, b) => {
-            if (sortMode === 'name-az')    return a.dataset.name.localeCompare(b.dataset.name);
-            if (sortMode === 'name-za')    return b.dataset.name.localeCompare(a.dataset.name);
-            if (sortMode === 'price-asc')  return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-            if (sortMode === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-            return 0;
+        // Ordena mobile e desktop separadamente
+        ['productsBody', 'mobileList'].forEach(id => {
+            const container = document.getElementById(id);
+            if (!container) return;
+            const containerRows = visible.filter(r => container.contains(r));
+            containerRows.sort((a, b) => {
+                if (sortMode === 'name-az')    return a.dataset.name.localeCompare(b.dataset.name);
+                if (sortMode === 'name-za')    return b.dataset.name.localeCompare(a.dataset.name);
+                if (sortMode === 'price-asc')  return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                if (sortMode === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                return 0;
+            });
+            containerRows.forEach(row => container.appendChild(row));
         });
-        visible.forEach(row => tbody.appendChild(row));
     }
 
-    const count = visible.length;
-    const total = rows.length;
-    document.getElementById('resultCount').textContent =
-        count === total ? `${total} produtos no catálogo` :
-        `${count} de ${total} produto${total !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}`;
-    document.getElementById('emptyFilter').classList.toggle('hidden', count > 0);
+    const count = visible.length / 2; // divide por 2 pois cada produto tem 2 rows (mobile + desktop)
+    const total = rows.length / 2;
+    const countEl = document.getElementById('resultCount');
+    if (countEl) countEl.textContent = count === total
+        ? `${total} produto${total !== 1 ? 's' : ''} no catálogo`
+        : `${count} de ${total} produto${total !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}`;
+
+    const emptyEl = document.getElementById('emptyFilter');
+    if (emptyEl) emptyEl.classList.toggle('hidden', count > 0);
 }
 
-// Inicializa contagem
 renderTable();
 </script>
 {{end}}

@@ -1,199 +1,440 @@
 {{define "content"}}
-<div class="max-w-2xl mx-auto">
-  <div class="flex items-center gap-4 mb-6">
-    <a href="/admin/produtos" class="text-gray-500 hover:text-black text-sm">← Voltar</a>
-    <h1 class="text-2xl font-bold">
+<div class="max-w-2xl mx-auto pb-12">
+
+  <!-- Cabeçalho -->
+  <div class="flex items-center gap-3 mb-6">
+    <a href="/admin/produtos" class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-200 transition flex-shrink-0">
+      ←
+    </a>
+    <h1 class="text-xl font-bold">
       {{if .IsEdit}}Editar produto{{else}}Novo produto{{end}}
     </h1>
   </div>
 
   {{if .Error}}
-  <div class="bg-red-50 text-red-600 border border-red-200 rounded-lg px-4 py-3 text-sm mb-6">{{.Error}}</div>
+  <div class="bg-red-50 text-red-600 border border-red-200 rounded-xl px-4 py-3 text-sm mb-5 font-medium">
+    ⚠️ {{.Error}}
+  </div>
   {{end}}
 
-  <form method="POST"
+  <form id="productForm" method="POST"
     action="{{if .IsEdit}}/admin/produtos/{{.Product.ID}}/atualizar{{else}}/admin/produtos/criar{{end}}"
-    class="space-y-6">
+    class="space-y-4">
 
-    <!-- Informações básicas -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
-      <h2 class="font-bold text-sm text-gray-500 uppercase tracking-wide">Informações básicas</h2>
+    <!-- Campos ocultos (gerados automaticamente) -->
+    <input type="hidden" name="codigo" value="{{.Product.Code}}">
+    <input type="hidden" name="slug" value="{{.Product.Slug}}">
+    <input type="hidden" name="variantes" id="variantesHidden">
+    <input type="hidden" name="imagens" id="imagensHidden">
 
-      <div class="grid grid-cols-2 gap-4">
-        <div class="col-span-2">
-          <label class="block text-sm font-semibold mb-1">Nome *</label>
-          <input type="text" name="nome" value="{{.Product.Name}}" required
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Marca</label>
-          <input type="text" name="marca" value="{{.Product.Brand}}" placeholder="ex: Nike"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Modelo</label>
-          <input type="text" name="modelo" value="{{.Product.Model}}" placeholder="ex: Air Force 1"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Código</label>
-          <input type="text" name="codigo" value="{{.Product.Code}}"
-            placeholder="Auto (ex: NIK001)"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm">
-          <p class="text-xs text-gray-400 mt-1">Deixe em branco para gerar automaticamente.</p>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Slug (URL)</label>
-          <input type="text" name="slug" value="{{.Product.Slug}}"
-            placeholder="Auto (ex: nike-air-force-1)"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm">
-        </div>
-        <div class="col-span-2">
-          <label class="block text-sm font-semibold mb-1">Descrição</label>
-          <textarea name="descricao" rows="3"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black resize-none">{{.Product.Description}}</textarea>
-        </div>
+    <!-- ── 1. Informações básicas ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span class="text-lg">📦</span> Informações do produto
+      </h2>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nome *</label>
+        <input type="text" name="nome" value="{{.Product.Name}}" required
+          placeholder="Ex: Nike Air Force 1"
+          class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black">
       </div>
-    </div>
-
-    <!-- Preço -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
-      <h2 class="font-bold text-sm text-gray-500 uppercase tracking-wide">Preço</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-semibold mb-1">Preço normal *</label>
-          <input type="text" name="preco" required
-            value="{{if .Product.Price}}{{printf "%.2f" .Product.Price}}{{end}}"
-            placeholder="ex: 349,90"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Preço promocional</label>
-          <input type="text" name="preco_promocional"
-            value="{{if gt .Product.SalePrice 0.0}}{{printf "%.2f" .Product.SalePrice}}{{end}}"
-            placeholder="ex: 279,90"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-          <p class="text-xs text-gray-400 mt-1">Preencha junto com "Em promoção" abaixo.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Etiquetas e controle -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
-      <h2 class="font-bold text-sm text-gray-500 uppercase tracking-wide">Etiquetas e exibição</h2>
 
       <div class="grid grid-cols-2 gap-3">
-        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
-          <input type="checkbox" name="destaque" value="1" {{if .Product.Featured}}checked{{end}} class="w-5 h-5 accent-yellow-400">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Marca</label>
+          <input type="text" name="marca" value="{{.Product.Brand}}"
+            placeholder="Ex: Nike"
+            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Modelo</label>
+          <input type="text" name="modelo" value="{{.Product.Model}}"
+            placeholder="Ex: Air Force 1"
+            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Descrição</label>
+        <textarea name="descricao" rows="3" placeholder="Descreva o produto…"
+          class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black resize-none">{{.Product.Description}}</textarea>
+      </div>
+    </div>
+
+    <!-- ── 2. Preço ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span class="text-lg">💰</span> Preço
+      </h2>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Preço normal *</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">R$</span>
+          <input type="text" name="preco" required
+            value="{{if .Product.Price}}{{printf "%.2f" .Product.Price}}{{end}}"
+            placeholder="0,00"
+            class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+        </div>
+      </div>
+
+      <!-- Toggle promoção -->
+      <label class="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-xl cursor-pointer"
+        id="saleToggleWrap">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🔥</span>
           <div>
-            <div class="text-sm font-semibold">⭐ Destaque</div>
-            <div class="text-xs text-gray-400">Aparece primeiro no catálogo</div>
+            <div class="text-sm font-semibold text-gray-800">Em promoção</div>
+            <div class="text-xs text-gray-500">Mostra preço riscado e badge "Oferta"</div>
           </div>
+        </div>
+        <div class="relative">
+          <input type="checkbox" id="saleToggle" name="is_sale" value="1"
+            {{if .Product.IsSale}}checked{{end}}
+            class="sr-only" onchange="toggleSalePrice(this.checked)">
+          <div id="saleToggleTrack"
+            class="w-12 h-6 rounded-full transition-colors {{if .Product.IsSale}}bg-red-500{{else}}bg-gray-200{{end}}"></div>
+          <div id="saleToggleThumb"
+            class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform {{if .Product.IsSale}}translate-x-6{{else}}translate-x-0.5{{end}}"></div>
+        </div>
+      </label>
+
+      <div id="salePriceField" class="{{if not .Product.IsSale}}hidden{{end}}">
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Preço com desconto</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">R$</span>
+          <input type="text" name="preco_promocional"
+            value="{{if gt .Product.SalePrice 0.0}}{{printf "%.2f" .Product.SalePrice}}{{end}}"
+            placeholder="0,00"
+            class="w-full border border-red-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. Cores e Tamanhos ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span class="text-lg">🎨</span> Cores e Tamanhos
+      </h2>
+
+      <!-- Cores adicionadas -->
+      <div id="variantsList" class="space-y-3"></div>
+
+      <!-- Adicionar nova cor -->
+      <div class="flex gap-2">
+        <input type="text" id="newColorInput" placeholder="Nome da cor (ex: Branco)"
+          class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();addColor()}">
+        <button type="button" onclick="addColor()"
+          class="bg-black text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition whitespace-nowrap">
+          + Cor
+        </button>
+      </div>
+
+      <p class="text-xs text-gray-400">
+        💡 Adicione uma cor e selecione os tamanhos disponíveis.
+      </p>
+    </div>
+
+    <!-- ── 4. Fotos ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span class="text-lg">📸</span> Fotos
+      </h2>
+
+      <!-- Preview das imagens -->
+      <div id="imageGrid" class="grid grid-cols-3 gap-2"></div>
+
+      <!-- Upload -->
+      <div class="flex gap-2">
+        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="uploadImage()">
+        <button type="button" onclick="document.getElementById('fileInput').click()"
+          class="flex-1 border-2 border-dashed border-gray-200 rounded-xl py-4 text-sm text-gray-500 hover:border-gray-400 hover:text-gray-700 transition flex items-center justify-center gap-2">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Adicionar foto
+        </button>
+      </div>
+      <p id="uploadStatus" class="text-xs text-center text-gray-400 hidden"></p>
+    </div>
+
+    <!-- ── 5. Etiquetas e status ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">
+        <span class="text-lg">🏷️</span> Etiquetas
+      </h2>
+
+      <div class="grid grid-cols-2 gap-2">
+
+        <label class="tag-card {{if .Product.Featured}}active{{end}}" onclick="toggleTag(this)">
+          <input type="checkbox" name="destaque" value="1" {{if .Product.Featured}}checked{{end}} hidden>
+          <div class="tag-icon">⭐</div>
+          <div class="tag-label">Destaque</div>
+          <div class="tag-sub">Aparece primeiro</div>
         </label>
-        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
-          <input type="checkbox" name="is_new" value="1" {{if .Product.IsNew}}checked{{end}} class="w-5 h-5 accent-green-500">
-          <div>
-            <div class="text-sm font-semibold">🆕 Novidade</div>
-            <div class="text-xs text-gray-400">Mostra badge "Novo" no card</div>
-          </div>
+
+        <label class="tag-card {{if .Product.IsNew}}active{{end}}" onclick="toggleTag(this)">
+          <input type="checkbox" name="is_new" value="1" {{if .Product.IsNew}}checked{{end}} hidden>
+          <div class="tag-icon">🆕</div>
+          <div class="tag-label">Novidade</div>
+          <div class="tag-sub">Badge verde</div>
         </label>
-        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
-          <input type="checkbox" name="is_sale" value="1" {{if .Product.IsSale}}checked{{end}} class="w-5 h-5 accent-red-500">
-          <div>
-            <div class="text-sm font-semibold">🔥 Em promoção</div>
-            <div class="text-xs text-gray-400">Mostra badge "Oferta" e preço riscado</div>
-          </div>
+
+        <label class="tag-card {{if .Product.IsLimited}}active{{end}}" onclick="toggleTag(this)">
+          <input type="checkbox" name="is_limited" value="1" {{if .Product.IsLimited}}checked{{end}} hidden>
+          <div class="tag-icon">⚡</div>
+          <div class="tag-label">Limitado</div>
+          <div class="tag-sub">Badge roxo</div>
         </label>
-        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
-          <input type="checkbox" name="is_limited" value="1" {{if .Product.IsLimited}}checked{{end}} class="w-5 h-5 accent-purple-500">
-          <div>
-            <div class="text-sm font-semibold">⚡ Limitado</div>
-            <div class="text-xs text-gray-400">Mostra badge "Limitado" no card</div>
-          </div>
+
+        <label class="tag-card" style="cursor:default;opacity:.5;">
+          <div class="tag-icon">🔥</div>
+          <div class="tag-label">Promoção</div>
+          <div class="tag-sub">Definido no preço</div>
         </label>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 pt-2">
+      <!-- Status + Ordem -->
+      <div class="grid grid-cols-2 gap-3 pt-1">
         <div>
-          <label class="block text-sm font-semibold mb-1">Status</label>
-          <select name="status" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
+          <select name="status" class="form-select w-full">
             <option value="available" {{if eq .Product.Status "available"}}selected{{end}}>✅ Disponível</option>
             <option value="unavailable" {{if eq .Product.Status "unavailable"}}selected{{end}}>❌ Indisponível</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-semibold mb-1">Ordem de exibição</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Ordem</label>
           <input type="number" name="ordem" value="{{.Product.SortOrder}}" min="0" max="999"
-            placeholder="0 = automático"
-            class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
-          <p class="text-xs text-gray-400 mt-1">Números menores aparecem primeiro. 0 = automático.</p>
+            placeholder="0 = auto"
+            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black">
         </div>
       </div>
     </div>
 
-    <!-- Variantes -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-3">
-      <h2 class="font-bold text-sm text-gray-500 uppercase tracking-wide">Cores e tamanhos</h2>
-      <p class="text-xs text-gray-500">Uma cor por linha, tamanhos separados por vírgula:</p>
-      <div class="bg-gray-50 rounded-lg px-3 py-2 font-mono text-xs text-gray-500 leading-relaxed">
-        Branco: 38, 39, 40, 42<br>Preto: 40, 41
-      </div>
-      <textarea name="variantes" rows="5"
-        placeholder="Branco: 38, 39, 40, 42&#10;Preto: 40, 41"
-        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black resize-none font-mono text-sm">{{.VariantsText}}</textarea>
-    </div>
+    <!-- ── Botão salvar ── -->
+    <button type="submit"
+      class="w-full bg-black text-white py-4 rounded-2xl font-bold text-base hover:bg-gray-800 transition shadow-lg">
+      {{if .IsEdit}}Salvar alterações{{else}}Criar produto{{end}}
+    </button>
 
-    <!-- Imagens -->
-    <div class="bg-white rounded-2xl shadow p-6 space-y-3">
-      <h2 class="font-bold text-sm text-gray-500 uppercase tracking-wide">Imagens</h2>
-      <div class="flex gap-2 items-center">
-        <input type="file" id="fileInput" accept="image/*" class="text-sm flex-1">
-        <button type="button" onclick="uploadImage()"
-          class="border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition whitespace-nowrap">
-          Enviar foto
-        </button>
-      </div>
-      <p id="uploadStatus" class="text-xs text-gray-400 hidden"></p>
-      <p class="text-xs text-gray-400">Uma URL por linha. A primeira imagem é a capa do card.</p>
-      <textarea name="imagens" id="imagens" rows="4"
-        placeholder="https://..."
-        class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black resize-none font-mono text-sm">{{range .Product.Images}}{{.}}
-{{end}}</textarea>
-    </div>
+    <a href="/admin/produtos"
+      class="block text-center text-sm text-gray-400 hover:text-gray-600 transition py-2">
+      Cancelar
+    </a>
 
-    <!-- Ações -->
-    <div class="flex gap-3">
-      <button type="submit"
-        class="flex-1 bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">
-        {{if .IsEdit}}Salvar alterações{{else}}Criar produto{{end}}
-      </button>
-      <a href="/admin/produtos"
-        class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 transition flex items-center">
-        Cancelar
-      </a>
-    </div>
   </form>
 </div>
 
+<style>
+.tag-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: .25rem; padding: 1rem .75rem;
+  border: 2px solid #E5E7EB; border-radius: 1rem;
+  cursor: pointer; text-align: center;
+  transition: border-color .15s, background .15s;
+  background: #fff;
+}
+.tag-card:hover { border-color: #9CA3AF; }
+.tag-card.active { border-color: #111827; background: #F9FAFB; }
+.tag-icon { font-size: 1.5rem; }
+.tag-label { font-size: .8rem; font-weight: 700; color: #111827; }
+.tag-sub { font-size: .68rem; color: #9CA3AF; }
+
+.size-btn {
+  width: 44px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid #D1D5DB; border-radius: .5rem;
+  font-size: .8rem; font-weight: 600; cursor: pointer;
+  background: #fff; color: #374151;
+  transition: all .1s;
+}
+.size-btn.selected { background: #111827; color: #fff; border-color: #111827; }
+
+.form-select {
+  border: 1px solid #E5E7EB;
+  border-radius: .75rem;
+  padding: .75rem 2.5rem .75rem 1rem;
+  font-size: .875rem;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .875rem center;
+  outline: none;
+  color: #111827;
+}
+.form-select:focus { border-color: #111827; box-shadow: 0 0 0 2px rgba(17,24,39,.1); }
+</style>
+
 <script>
+// ── Constantes ─────────────────────────────────────────────
+const SIZES = ['33','34','35','36','37','38','39','40','41','42','43','44','45','46'];
+
+// ── Estado ─────────────────────────────────────────────────
+let variants = [];
+let images   = [];
+
+// ── Inicializa com dados existentes (modo edição) ──────────
+(function init() {
+  // Variantes
+  const raw = `{{.VariantsText}}`;
+  if (raw.trim()) {
+    raw.split('\n').forEach(line => {
+      const parts = line.split(':');
+      if (parts.length < 2) return;
+      const color = parts[0].trim();
+      const sizes = parts[1].split(',').map(s => s.trim()).filter(Boolean);
+      if (color) variants.push({ color, sizes });
+    });
+  }
+  renderVariants();
+
+  // Imagens
+  const rawImgs = `{{range .Product.Images}}{{.}}
+{{end}}`.trim();
+  if (rawImgs) {
+    images = rawImgs.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+  renderImages();
+})();
+
+// ── Variantes ───────────────────────────────────────────────
+function addColor() {
+  const input = document.getElementById('newColorInput');
+  const color = input.value.trim();
+  if (!color) { input.focus(); return; }
+  if (variants.find(v => v.color.toLowerCase() === color.toLowerCase())) {
+    input.focus(); return;
+  }
+  variants.push({ color, sizes: [] });
+  input.value = '';
+  renderVariants();
+  input.focus();
+}
+
+function toggleSize(colorIndex, size, btn) {
+  const v = variants[colorIndex];
+  const idx = v.sizes.indexOf(size);
+  if (idx >= 0) {
+    v.sizes.splice(idx, 1);
+    btn.classList.remove('selected');
+  } else {
+    v.sizes.push(size);
+    btn.classList.add('selected');
+  }
+  syncVariantData();
+}
+
+function removeColor(colorIndex) {
+  variants.splice(colorIndex, 1);
+  renderVariants();
+}
+
+function renderVariants() {
+  const container = document.getElementById('variantsList');
+  container.innerHTML = '';
+
+  variants.forEach((v, i) => {
+    const div = document.createElement('div');
+    div.className = 'border border-gray-100 rounded-xl p-4 space-y-3';
+    div.innerHTML = `
+      <div class="flex items-center justify-between">
+        <span class="font-semibold text-sm text-gray-800">${v.color}</span>
+        <button type="button" onclick="removeColor(${i})"
+          class="text-xs text-red-400 hover:text-red-600 transition">Remover</button>
+      </div>
+      <div class="flex flex-wrap gap-1.5" id="sizes-${i}">
+        ${SIZES.map(size => `
+          <button type="button" class="size-btn ${v.sizes.includes(size) ? 'selected' : ''}"
+            onclick="toggleSize(${i},'${size}',this)">${size}</button>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  syncVariantData();
+}
+
+function syncVariantData() {
+  document.getElementById('variantesHidden').value = variants
+    .filter(v => v.sizes.length > 0)
+    .map(v => v.color + ': ' + v.sizes.join(', '))
+    .join('\n');
+}
+
+// ── Imagens ─────────────────────────────────────────────────
 async function uploadImage() {
-  const input  = document.getElementById("fileInput");
-  const status = document.getElementById("uploadStatus");
-  if (!input.files.length) { alert("Selecione um arquivo."); return; }
+  const input  = document.getElementById('fileInput');
+  const status = document.getElementById('uploadStatus');
+  if (!input.files.length) return;
+
+  status.textContent = 'Enviando…';
+  status.classList.remove('hidden');
 
   const fd = new FormData();
-  fd.append("imagem", input.files[0]);
-  status.textContent = "Enviando…";
-  status.classList.remove("hidden");
+  fd.append('imagem', input.files[0]);
 
-  const res = await fetch("/admin/upload", { method: "POST", body: fd });
-  if (!res.ok) { status.textContent = "Erro no upload."; return; }
+  const res = await fetch('/admin/upload', { method: 'POST', body: fd });
+  if (!res.ok) { status.textContent = 'Erro no upload.'; return; }
 
-  const url      = await res.text();
-  const textarea = document.getElementById("imagens");
-  textarea.value = (textarea.value.trim() ? textarea.value.trim() + "\n" : "") + url;
-  status.textContent = "✅ Upload concluído!";
-  input.value = "";
+  const url = await res.text();
+  images.push(url);
+  renderImages();
+  status.textContent = '✅ Foto adicionada!';
+  input.value = '';
+  setTimeout(() => status.classList.add('hidden'), 2000);
 }
+
+function removeImage(index) {
+  images.splice(index, 1);
+  renderImages();
+}
+
+function renderImages() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+  images.forEach((url, i) => {
+    const div = document.createElement('div');
+    div.className = 'relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200';
+    div.innerHTML = `
+      <img src="${url}" class="w-full h-full object-cover">
+      <button type="button" onclick="removeImage(${i})"
+        class="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-black">
+        ✕
+      </button>
+      ${i === 0 ? '<span class="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded-full">Capa</span>' : ''}
+    `;
+    grid.appendChild(div);
+  });
+  document.getElementById('imagensHidden').value = images.join('\n');
+}
+
+// ── Tags ────────────────────────────────────────────────────
+function toggleTag(card) {
+  card.classList.toggle('active');
+  const cb = card.querySelector('input[type=checkbox]');
+  if (cb) cb.checked = !cb.checked;
+}
+
+// ── Promoção ─────────────────────────────────────────────────
+function toggleSalePrice(checked) {
+  document.getElementById('salePriceField').classList.toggle('hidden', !checked);
+  document.getElementById('saleToggleTrack').className =
+    'w-12 h-6 rounded-full transition-colors ' + (checked ? 'bg-red-500' : 'bg-gray-200');
+  document.getElementById('saleToggleThumb').className =
+    'absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ' +
+    (checked ? 'translate-x-6' : 'translate-x-0.5');
+}
+
+// ── Valida antes de submeter ──────────────────────────────────
+document.getElementById('productForm').addEventListener('submit', function(e) {
+  syncVariantData();
+  document.getElementById('imagensHidden').value = images.join('\n');
+});
 </script>
 {{end}}
