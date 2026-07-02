@@ -1,0 +1,23 @@
+web/templates/admin/product_form.html
+  s_d9a051a74243ef::t_0b4f07a4e90184 203
+  s_d9a051a74243ef::t_06756badc9dfcf 2-9,15-17,20,22,24-28,30-43,45-48,51-54,57-62,65-74,77-78,80-106,109-110,115-119,121-175,177-182,184-189,191-195,199-200,202,209,211-212,217-221,223-226,231-254,271-272,274-370,372-377,380-414,416-438
+  s_d9a051a74243ef::t_916765d89b77dd 255-270
+web/templates/admin/products.html
+  s_d9a051a74243ef::t_d69f98a2ee5bb2 7-8,13,19-20,22,24,28,32,48,53-65,67,69,72-73,79,90-183,188,197,226,229,245,252,256,264,270,289,304,333,339-342,358,370-382,386-394
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "23b84d735e8a696063d7c566b42e25fbf93f8a9c",
+  "prompts": {},
+  "sessions": {
+    "s_d9a051a74243ef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5dd41803-188d-478d-b34d-97a0ee4cabae",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "lubezerra_meli <lucas.bezerra@mercadolivre.com>"
+    }
+  }
+}
