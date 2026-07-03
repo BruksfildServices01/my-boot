@@ -5,7 +5,11 @@ run:
 	go run ./cmd/server
 
 migrate:
-	psql "$$DATABASE_URL" -f migrations/001_init.sql
+	@export $$(grep -v '^\#' .env | xargs) && \
+	for f in $$(ls migrations/*.sql | sort); do \
+		echo "Aplicando $$f..."; \
+		psql "$$DATABASE_URL" -f $$f; \
+	done
 
 tidy:
 	go mod tidy

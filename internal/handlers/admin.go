@@ -3,9 +3,12 @@ package handlers
 import (
 	"fmt"
 	"html/template"
+	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -14,24 +17,98 @@ import (
 	"myboot/internal/session"
 )
 
-type AdminHandler struct {
-	repo     *repository.ProductRepo
-	sessions *session.Store
-	upload   *UploadHandler
-
-	loginTmpl   *template.Template
-	listTmpl    *template.Template
-	formTmpl    *template.Template
+// loginLimiter bloqueia IPs após 5 tentativas falhas por 15 minutos.
+type loginLimiter struct {
+	mu      sync.Mutex
+	entries map[string]*limitEntry
 }
 
-func NewAdminHandler(repo *repository.ProductRepo, sessions *session.Store, upload *UploadHandler) *AdminHandler {
+type limitEntry struct {
+	failures int
+	blockedUntil time.Time
+}
+
+func newLoginLimiter() *loginLimiter {
+	return &loginLimiter{entries: make(map[string]*limitEntry)}
+}
+
+func (l *loginLimiter) allow(ip string) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	e := l.entries[ip]
+	if e == nil {
+		return true
+	}
+	if !e.blockedUntil.IsZero() && time.Now().Before(e.blockedUntil) {
+		return false
+	}
+	return true
+}
+
+func (l *loginLimiter) recordFailure(ip string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	e := l.entries[ip]
+	if e == nil {
+		e = &limitEntry{}
+		l.entries[ip] = e
+	}
+	// reseta contador se o bloqueio anterior já expirou
+	if !e.blockedUntil.IsZero() && time.Now().After(e.blockedUntil) {
+		e.failures = 0
+		e.blockedUntil = time.Time{}
+	}
+	e.failures++
+	if e.failures >= 5 {
+		e.blockedUntil = time.Now().Add(15 * time.Minute)
+	}
+}
+
+func (l *loginLimiter) reset(ip string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	delete(l.entries, ip)
+}
+
+func clientIP(r *http.Request) string {
+	if ip := r.Header.Get("X-Real-IP"); ip != "" {
+		return strings.TrimSpace(ip)
+	}
+	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+		return strings.TrimSpace(strings.SplitN(fwd, ",", 2)[0])
+	}
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	return ip
+}
+
+type AdminHandler struct {
+	repo            *repository.ProductRepo
+	testimonialRepo *repository.TestimonialRepo
+	settingsRepo    *repository.SettingsRepo
+	sessions        *session.Store
+	upload          *UploadHandler
+	limiter         *loginLimiter
+
+	loginTmpl           *template.Template
+	listTmpl            *template.Template
+	formTmpl            *template.Template
+	testimonialsTmpl    *template.Template
+	testimonialFormTmpl *template.Template
+}
+
+func NewAdminHandler(repo *repository.ProductRepo, testimonialRepo *repository.TestimonialRepo, settingsRepo *repository.SettingsRepo, sessions *session.Store, upload *UploadHandler) *AdminHandler {
 	return &AdminHandler{
-		repo:      repo,
-		sessions:  sessions,
-		upload:    upload,
-		loginTmpl: mustParse("web/templates/admin/layout.html", "web/templates/admin/login.html"),
-		listTmpl:  mustParse("web/templates/admin/layout.html", "web/templates/admin/products.html"),
-		formTmpl:  mustParse("web/templates/admin/layout.html", "web/templates/admin/product_form.html"),
+		repo:                repo,
+		testimonialRepo:     testimonialRepo,
+		settingsRepo:        settingsRepo,
+		sessions:            sessions,
+		upload:              upload,
+		limiter:             newLoginLimiter(),
+		loginTmpl:           mustParse("web/templates/admin/layout.html", "web/templates/admin/login.html"),
+		listTmpl:            mustParse("web/templates/admin/layout.html", "web/templates/admin/products.html"),
+		formTmpl:            mustParse("web/templates/admin/layout.html", "web/templates/admin/product_form.html"),
+		testimonialsTmpl:    mustParse("web/templates/admin/layout.html", "web/templates/admin/testimonials.html"),
+		testimonialFormTmpl: mustParse("web/templates/admin/layout.html", "web/templates/admin/testimonial_form.html"),
 	}
 }
 
@@ -53,15 +130,24 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AdminHandler) LoginPost(w http.ResponseWriter, r *http.Request) {
+	ip := clientIP(r)
+
+	if !h.limiter.allow(ip) {
+		render(w, h.loginTmpl, map[string]string{"Error": "Muitas tentativas. Tente novamente em 15 minutos."})
+		return
+	}
+
 	user := r.FormValue("usuario")
 	pass := r.FormValue("senha")
 
 	if user == os.Getenv("ADMIN_USER") && pass == os.Getenv("ADMIN_PASSWORD") {
+		h.limiter.reset(ip)
 		h.sessions.Create(w)
 		http.Redirect(w, r, "/admin/produtos", http.StatusFound)
 		return
 	}
 
+	h.limiter.recordFailure(ip)
 	render(w, h.loginTmpl, map[string]string{"Error": "Usuário ou senha inválidos."})
 }
 

@@ -1,14 +1,5 @@
 {{define "content"}}
 
-<!-- ── Hero ─────────────────────────────────────────────── -->
-<div class="catalog-hero">
-  <div class="catalog-hero__inner">
-    <img src="/static/img/logo.png" alt="My Boot" class="hero-logo loaded">
-    <h1 class="hero-title">Tênis com estilo</h1>
-    <p class="hero-sub">Encontre o par perfeito e peça direto no WhatsApp</p>
-  </div>
-</div>
-
 <!-- ── Corpo ─────────────────────────────────────────────── -->
 <div class="catalog-body">
 
@@ -45,6 +36,34 @@
     </button>
   </div>
 
+  <!-- ── Quick chips (mobile, scroll horizontal) ──────── -->
+  <form id="quickChipForm" method="GET" action="/" class="quick-chips-form">
+    {{if .Filter.Search}}<input type="hidden" name="q" value="{{.Filter.Search}}">{{end}}
+    {{if .Filter.Brand}}<input type="hidden" name="marca" value="{{.Filter.Brand}}">{{end}}
+    {{if .Filter.Color}}<input type="hidden" name="cor" value="{{.Filter.Color}}">{{end}}
+    {{if .Filter.Size}}<input type="hidden" name="tamanho" value="{{.Filter.Size}}">{{end}}
+    {{if gt .Filter.MinPrice 0.0}}<input type="hidden" name="preco_min" value="{{printf "%.0f" .Filter.MinPrice}}">{{end}}
+    {{if gt .Filter.MaxPrice 0.0}}<input type="hidden" name="preco_max" value="{{printf "%.0f" .Filter.MaxPrice}}">{{end}}
+    <div class="quick-chips">
+      <label class="qchip qchip--new {{if .Filter.OnlyNew}}active{{end}}">
+        <input type="checkbox" name="novos" value="1" {{if .Filter.OnlyNew}}checked{{end}} hidden onchange="this.form.submit()">
+        🆕 Novidades
+      </label>
+      <label class="qchip qchip--sale {{if .Filter.OnlySale}}active{{end}}">
+        <input type="checkbox" name="promocao" value="1" {{if .Filter.OnlySale}}checked{{end}} hidden onchange="this.form.submit()">
+        🔥 Promoção
+      </label>
+      <label class="qchip qchip--limited {{if .Filter.OnlyLimited}}active{{end}}">
+        <input type="checkbox" name="limitado" value="1" {{if .Filter.OnlyLimited}}checked{{end}} hidden onchange="this.form.submit()">
+        ⚡ Limitado
+      </label>
+      <label class="qchip qchip--avail {{if .Filter.OnlyAvailable}}active{{end}}">
+        <input type="checkbox" name="disponiveis" value="1" {{if .Filter.OnlyAvailable}}checked{{end}} hidden onchange="this.form.submit()">
+        ✅ Disponível
+      </label>
+    </div>
+  </form>
+
   <!-- ── Filtros ativos (chips removíveis) ─────────────── -->
   {{if gt .ActiveFilters 0}}
   <div class="active-chips">
@@ -70,26 +89,10 @@
   <!-- ── Barra de filtros DESKTOP ──────────────────────── -->
   <form id="desktopFilterForm" method="GET" action="/" class="desktop-filter-bar">
     {{if .Filter.Search}}<input type="hidden" name="q" value="{{.Filter.Search}}">{{end}}
-
-    <!-- Categoria -->
-    <label class="pill pill--new {{if .Filter.OnlyNew}}active{{end}}">
-      <input type="checkbox" name="novos" value="1" {{if .Filter.OnlyNew}}checked{{end}} hidden onchange="this.form.submit()">
-      🆕 Novidades
-    </label>
-    <label class="pill pill--sale {{if .Filter.OnlySale}}active{{end}}">
-      <input type="checkbox" name="promocao" value="1" {{if .Filter.OnlySale}}checked{{end}} hidden onchange="this.form.submit()">
-      🔥 Promoção
-    </label>
-    <label class="pill pill--limited {{if .Filter.OnlyLimited}}active{{end}}">
-      <input type="checkbox" name="limitado" value="1" {{if .Filter.OnlyLimited}}checked{{end}} hidden onchange="this.form.submit()">
-      ⚡ Limitado
-    </label>
-    <label class="pill pill--avail {{if .Filter.OnlyAvailable}}active{{end}}">
-      <input type="checkbox" name="disponiveis" value="1" {{if .Filter.OnlyAvailable}}checked{{end}} hidden onchange="this.form.submit()">
-      ✅ Disponíveis
-    </label>
-
-    <div class="filter-divider"></div>
+    {{if .Filter.OnlyNew}}<input type="hidden" name="novos" value="1">{{end}}
+    {{if .Filter.OnlySale}}<input type="hidden" name="promocao" value="1">{{end}}
+    {{if .Filter.OnlyLimited}}<input type="hidden" name="limitado" value="1">{{end}}
+    {{if .Filter.OnlyAvailable}}<input type="hidden" name="disponiveis" value="1">{{end}}
 
     <!-- Marca -->
     <select name="marca" class="filter-select {{if .Filter.Brand}}active-filter{{end}}" onchange="this.form.submit()">

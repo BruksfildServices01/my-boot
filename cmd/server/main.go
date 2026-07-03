@@ -30,24 +30,32 @@ func main() {
 	}
 	log.Println("Conectado ao banco de dados.")
 
-	sessions := session.NewStore()
+	sessions := session.NewStore(os.Getenv("COOKIE_SECURE") == "true")
 	repo := repository.NewProductRepo(pool)
+	testimonialRepo := repository.NewTestimonialRepo(pool)
+	settingsRepo := repository.NewSettingsRepo(pool)
 	upload := handlers.NewUploadHandler()
 
-	catalog := handlers.NewCatalogHandler(repo)
-	admin := handlers.NewAdminHandler(repo, sessions, upload)
+	catalog := handlers.NewCatalogHandler(repo, testimonialRepo, settingsRepo)
+	admin := handlers.NewAdminHandler(repo, testimonialRepo, settingsRepo, sessions, upload)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.CleanPath)
+	r.Use(middleware.Compress(5))
 
-	// arquivos estáticos
-	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
+	// arquivos estáticos com cache de 1 ano (URLs têm ?v= para invalidar)
+	staticFS := http.FileServer(http.Dir("web/static"))
+	r.Handle("/static/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		http.StripPrefix("/static/", staticFS).ServeHTTP(w, r)
+	}))
 
 	// vitrine pública
 	r.Get("/", catalog.Catalog)
 	r.Get("/produto/{slug}", catalog.Product)
+	r.Get("/my-boot", catalog.MyBoot)
 
 	// admin — login público
 	r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +75,12 @@ func main() {
 		r.Post("/admin/produtos/{id}/atualizar", admin.UpdateProduct)
 		r.Post("/admin/produtos/{id}/deletar", admin.DeleteProduct)
 		r.Post("/admin/upload", admin.UploadImage)
+		r.Get("/admin/myboot", admin.Testimonials)
+		r.Get("/admin/myboot/novo", admin.NewTestimonial)
+		r.Post("/admin/myboot/criar", admin.CreateTestimonial)
+		r.Post("/admin/myboot/{id}/deletar", admin.DeleteTestimonial)
+		r.Post("/admin/myboot/{id}/toggle", admin.ToggleTestimonial)
+		r.Post("/admin/myboot-toggle", admin.ToggleMyBoot)
 	})
 
 	addr := ":" + getenv("PORT", "8080")

@@ -1,0 +1,93 @@
+{{define "content"}}
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- Cabeçalho -->
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">My Boot — Mídia</h1>
+      <p class="text-sm text-gray-500 mt-1">Vídeos do YouTube e prints de entrega</p>
+    </div>
+    <a href="/admin/myboot/novo"
+       class="inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-700 transition-colors">
+      + Adicionar
+    </a>
+  </div>
+
+  <!-- Toggle página pública -->
+  <form method="POST" action="/admin/myboot-toggle" class="mb-6">
+    <button type="submit"
+      class="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors
+        {{if .Enabled}}bg-green-100 text-green-800 hover:bg-green-200{{else}}bg-gray-100 text-gray-500 hover:bg-gray-200{{end}}">
+      <span class="w-2.5 h-2.5 rounded-full {{if .Enabled}}bg-green-500{{else}}bg-gray-400{{end}}"></span>
+      Página ativa:&nbsp;<strong>{{if .Enabled}}ON{{else}}OFF{{end}}</strong>
+    </button>
+  </form>
+
+  {{if .Flash}}
+  <div class="mb-4 bg-green-50 border border-green-200 text-green-800 text-sm font-medium px-4 py-3 rounded-xl">
+    {{.Flash}}
+  </div>
+  {{end}}
+
+  {{if not .Items}}
+  <div class="text-center py-16 text-gray-400">
+    <p class="text-lg font-medium">Nenhum item ainda.</p>
+    <p class="text-sm mt-1">Adicione um vídeo ou print para começar.</p>
+  </div>
+  {{else}}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {{range .Items}}
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+      <!-- Preview -->
+      {{if eq .Type "video"}}
+      <div class="relative bg-black" style="aspect-ratio:16/9;">
+        <img
+          src="https://img.youtube.com/vi/{{.YouTubeID}}/mqdefault.jpg"
+          alt="{{.Caption}}"
+          class="w-full h-full object-cover opacity-80">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">▶ YouTube</span>
+        </div>
+      </div>
+      {{else}}
+      <div style="aspect-ratio:1/1;background:#f5f5f5;">
+        <img src="{{.URL}}" alt="{{.Caption}}" class="w-full h-full object-cover">
+      </div>
+      {{end}}
+
+      <!-- Info -->
+      <div class="p-3">
+        {{if .Caption}}
+        <p class="text-sm font-medium text-gray-800 truncate">{{.Caption}}</p>
+        {{else}}
+        <p class="text-sm text-gray-400 italic">Sem legenda</p>
+        {{end}}
+
+        <div class="flex items-center justify-between mt-3 gap-2">
+          <!-- Toggle visível -->
+          <form method="POST" action="/admin/myboot/{{.ID}}/toggle">
+            <button type="submit"
+              class="text-xs font-semibold px-3 py-1 rounded-full border transition-colors
+                {{if .Visible}}bg-green-50 text-green-700 border-green-200 hover:bg-green-100
+                {{else}}bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200{{end}}">
+              {{if .Visible}}● Visível{{else}}○ Oculto{{end}}
+            </button>
+          </form>
+
+          <!-- Deletar -->
+          <form method="POST" action="/admin/myboot/{{.ID}}/deletar"
+            onsubmit="return confirm('Remover este item?')">
+            <button type="submit"
+              class="text-xs font-semibold px-3 py-1 rounded-full border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+              Remover
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {{end}}
+  </div>
+  {{end}}
+</div>
+{{end}}

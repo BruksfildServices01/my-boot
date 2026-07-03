@@ -11,16 +11,22 @@ import (
 )
 
 type CatalogHandler struct {
-	repo        *repository.ProductRepo
-	catalogTmpl *template.Template
-	productTmpl *template.Template
+	repo            *repository.ProductRepo
+	testimonialRepo *repository.TestimonialRepo
+	settingsRepo    *repository.SettingsRepo
+	catalogTmpl     *template.Template
+	productTmpl     *template.Template
+	mybootTmpl      *template.Template
 }
 
-func NewCatalogHandler(repo *repository.ProductRepo) *CatalogHandler {
+func NewCatalogHandler(repo *repository.ProductRepo, testimonialRepo *repository.TestimonialRepo, settingsRepo *repository.SettingsRepo) *CatalogHandler {
 	return &CatalogHandler{
-		repo:        repo,
-		catalogTmpl: mustParse("web/templates/layout.html", "web/templates/catalog.html"),
-		productTmpl: mustParse("web/templates/layout.html", "web/templates/product.html"),
+		repo:            repo,
+		testimonialRepo: testimonialRepo,
+		settingsRepo:    settingsRepo,
+		catalogTmpl:     mustParse("web/templates/layout.html", "web/templates/catalog.html"),
+		productTmpl:     mustParse("web/templates/layout.html", "web/templates/product.html"),
+		mybootTmpl:      mustParse("web/templates/layout.html", "web/templates/myboot.html"),
 	}
 }
 
@@ -94,6 +100,20 @@ type productData struct {
 	ColorMapJSON   template.JS
 	WhatsAppNumber string
 	SiteURL        string
+}
+
+func (h *CatalogHandler) MyBoot(w http.ResponseWriter, r *http.Request) {
+	val, _ := h.settingsRepo.Get(r.Context(), "myboot_enabled")
+	if val == "false" {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	items, err := h.testimonialRepo.List(r.Context(), true)
+	if err != nil {
+		http.Error(w, "Erro interno", http.StatusInternalServerError)
+		return
+	}
+	render(w, h.mybootTmpl, map[string]any{"Items": items})
 }
 
 func (h *CatalogHandler) Product(w http.ResponseWriter, r *http.Request) {

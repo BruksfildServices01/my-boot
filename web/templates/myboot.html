@@ -1,0 +1,91 @@
+{{define "content"}}
+<div class="myboot-page">
+
+  <div class="myboot-hero">
+    <img src="/static/img/logo.png" alt="My Boot" class="myboot-hero-logo loaded">
+    <h1 class="myboot-hero-title">My Boot</h1>
+    <p class="myboot-hero-sub">Tênis entregues, clientes felizes — veja você mesmo</p>
+  </div>
+
+  <div class="myboot-body">
+    {{if not .Items}}
+    <div class="empty-state" style="padding:5rem 1rem;">
+      <p style="font-size:1rem;font-weight:600;color:#374151;">Em breve aqui</p>
+      <p>Novidades chegando em breve!</p>
+    </div>
+    {{else}}
+    <div class="reel-wrap">
+      <div class="reel-track" id="reelTrack">
+        {{range .Items}}
+        <div class="reel-slide">
+          {{if eq .Type "video"}}
+          <div class="reel-video" data-id="{{.YouTubeID}}">
+            <img src="https://img.youtube.com/vi/{{.YouTubeID}}/hqdefault.jpg" loading="lazy" alt="{{.Caption}}">
+          </div>
+          {{else}}
+          <div class="reel-image">
+            <img src="{{.URL}}" loading="lazy" alt="{{.Caption}}">
+          </div>
+          {{end}}
+          {{if .Caption}}<p class="reel-caption">{{.Caption}}</p>{{end}}
+        </div>
+        {{end}}
+      </div>
+
+      {{if gt (len .Items) 1}}
+      <div class="reel-dots" id="reelDots">
+        {{range $i, $_ := .Items}}
+        <button class="reel-dot{{if eq $i 0}} active{{end}}" onclick="goToSlide({{$i}})"></button>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+    {{end}}
+  </div>
+</div>
+
+<script>
+const track = document.getElementById('reelTrack');
+const dots  = document.querySelectorAll('.reel-dot');
+
+if (track) {
+  // Autoplay muted quando slide entra em tela, pausa quando sai
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const slide = entry.target;
+      const vDiv  = slide.querySelector('.reel-video');
+
+      // Atualiza dot ativo
+      if (entry.intersectionRatio >= 0.5) {
+        const idx = Array.from(track.children).indexOf(slide);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+
+      if (!vDiv) return;
+      const id = vDiv.dataset.id;
+
+      if (entry.intersectionRatio >= 0.5) {
+        if (!vDiv.querySelector('iframe')) {
+          vDiv.innerHTML = `<iframe
+            src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&rel=0&playsinline=1&controls=1"
+            frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen></iframe>`;
+        }
+      } else {
+        if (vDiv.querySelector('iframe')) {
+          vDiv.innerHTML = `<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" loading="lazy">`;
+        }
+      }
+    });
+  }, { threshold: [0, 0.5] });
+
+  Array.from(track.children).forEach(slide => observer.observe(slide));
+}
+
+function goToSlide(idx) {
+  const slide = track && track.children[idx];
+  if (slide) slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+</script>
+{{end}}

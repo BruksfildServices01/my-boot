@@ -25,7 +25,7 @@ type Product struct {
 }
 
 // DisplayPrice retorna o preço promocional se houver, caso contrário o preço normal.
-func (p *Product) DisplayPrice() float64 {
+func (p Product) DisplayPrice() float64 {
 	if p.IsSale && p.SalePrice > 0 {
 		return p.SalePrice
 	}

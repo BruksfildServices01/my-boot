@@ -13,10 +13,11 @@ const cookieName = "myboot_admin"
 type Store struct {
 	mu       sync.RWMutex
 	sessions map[string]time.Time
+	secure   bool
 }
 
-func NewStore() *Store {
-	return &Store{sessions: make(map[string]time.Time)}
+func NewStore(secure bool) *Store {
+	return &Store{sessions: make(map[string]time.Time), secure: secure}
 }
 
 func (s *Store) Create(w http.ResponseWriter) {
@@ -31,6 +32,7 @@ func (s *Store) Create(w http.ResponseWriter) {
 		Path:     "/",
 		MaxAge:   86400,
 		HttpOnly: true,
+		Secure:   s.secure,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
