@@ -1,0 +1,110 @@
+internal/handlers/helpers_test.go
+  s_fa77118e8397d1::t_d8758ba02ca128 3,7,12-17,57-58
+  s_fa77118e8397d1::t_27afa0f822c919 1-2,4-5,8-11,18-56,59-68
+  s_fa77118e8397d1::t_ea49f91cd3b5ce 6
+internal/handlers/upload.go
+  s_fa77118e8397d1::t_014926bc7d5aac 7-10,21-22,60-67,71-72,80-107
+  s_fa77118e8397d1::t_f669bd5fe9ec45 108
+web/templates/layout.html
+  s_fa77118e8397d1::t_a5b194e64674de 13
+  s_fa77118e8397d1::t_9bdf1a54597530 25-26
+  s_fa77118e8397d1::t_e12bb0558f244a 11-12
+cmd/server/main.go
+  s_fa77118e8397d1::t_865f6e20ab7a64 36,39-40
+  s_fa77118e8397d1::t_5b9e487b9e6ddf 33
+  s_fa77118e8397d1::t_e7f097dbfd89be 83
+  s_fa77118e8397d1::t_593397a650b9e1 46,48-53
+  s_fa77118e8397d1::t_979d3ebed7f618 35
+  s_fa77118e8397d1::t_a714294956ea88 78-82
+  s_fa77118e8397d1::t_1567bf7c792348 58
+internal/session/session.go
+  s_fa77118e8397d1::t_b4c7699147b688 16,19-20,35
+go.mod
+  s_fa77118e8397d1::t_477b961d260fcf 3,13,35-36
+web/templates/catalog.html
+  s_fa77118e8397d1::t_c59c382950f302 92-95
+  s_fa77118e8397d1::t_ec0827fa7cf3fd 39-66
+internal/handlers/catalog.go
+  s_fa77118e8397d1::t_4a1b923521d154 14-15,17-19,24-25,27-29
+  s_fa77118e8397d1::t_1d4275f51e0f07 106-110
+  s_fa77118e8397d1::t_21a4e1779e8679 16,22,26
+  s_fa77118e8397d1::t_b0f63b4248cda9 105,111-118
+internal/models/testimonial.go
+  s_fa77118e8397d1::t_1afaea365365c7 1-74
+web/templates/admin/testimonials.html
+  s_fa77118e8397d1::t_aa7e4d6f58b2a6 1-4,6-14,25-93
+  s_fa77118e8397d1::t_4f2c1bf35c9f3a 5,15-16,18,23-24
+  s_fa77118e8397d1::t_912d4333e0dd74 17,19-22
+web/templates/admin/testimonial_form.html
+  s_fa77118e8397d1::t_e2cd987fc72437 1-72
+internal/repository/product_test.go
+  s_fa77118e8397d1::t_cfc27e5de33dc0 1-25
+internal/handlers/admin_testimonial.go
+  s_fa77118e8397d1::t_854608133dc962 1-12,16-23,25,29,40-77,82-106
+  s_fa77118e8397d1::t_89f913527f79a4 13-15,24,26-28,30-39
+  s_fa77118e8397d1::t_7a38dd1d93ced6 78-81
+internal/models/product_test.go
+  s_fa77118e8397d1::t_a3614c4ce5af7e 1-24
+internal/repository/testimonial.go
+  s_fa77118e8397d1::t_515dc12e680fd9 1-59
+web/templates/myboot.html
+  s_fa77118e8397d1::t_ddf5368baccf68 17-23,25-30,33-38,48-88
+  s_fa77118e8397d1::t_89ec20ecf5a7fb 1-16,31-32,39-45,91
+  s_fa77118e8397d1::t_a91dda8a2daa85 46-47,89-90
+  s_fa77118e8397d1::t_5af6e205b1c1dd 24
+web/templates/admin/layout.html
+  s_fa77118e8397d1::t_c0d7b3fd323c3b 13-16,18
+internal/repository/settings.go
+  s_fa77118e8397d1::t_6d671e54228472 1-33
+internal/models/product.go
+  s_fa77118e8397d1::t_7b7a462511e575 28
+web/static/css/app.css
+  s_fa77118e8397d1::t_aaad452df26fbf 215-216,218-220,223,226,228-272
+  s_fa77118e8397d1::t_977708412c7d99 198-201,204-205,209-214,217,221-222,224-225,227,273-274
+  s_fa77118e8397d1::t_1466d009682851 197,202-203,206-208
+  s_fa77118e8397d1::t_486d3cd9a2eb1e 91,94-96,101,104-106,108
+  s_fa77118e8397d1::t_adf3c0dc64e0b6 90,92,97,99,102,109
+  s_fa77118e8397d1::t_68bb24c4fbd6c2 607-642,645,660-661,664-666,672,674-676,678,681-682,691,693-697,716,718
+  s_fa77118e8397d1::t_4a4aad6702b6b3 643-644,646-659,662-663,667-671,673,679-680,685,688-690,692,698-715,717
+  s_fa77118e8397d1::t_a2aae404b863e2 677,683-684,686-687
+  s_fa77118e8397d1::t_5ccebd3d00e9f9 87-89,103,107
+  s_fa77118e8397d1::t_daffe7b40fab0c 86
+migrations/003_testimonials.sql
+  s_fa77118e8397d1::t_65958d5ed705a0 1,9
+  s_fa77118e8397d1::t_2d732650cca2de 2-8
+web/templates/product.html
+  s_fa77118e8397d1::t_a05befdda96059 134
+  s_fa77118e8397d1::t_23e5a3078319a0 105,123
+  s_fa77118e8397d1::t_040f3fb843733a 116
+internal/handlers/admin.go
+  s_fa77118e8397d1::t_c0b5611441e503 133-139,144,150
+  s_fa77118e8397d1::t_9f3782c2dd6998 85-86,88-90,96,101-102,104-111
+  s_fa77118e8397d1::t_c4a2a30102d0ab 6,10-11,20-65,67-70,73-82,97
+  s_fa77118e8397d1::t_709229a87a05df 87,92-95,99,103
+  s_fa77118e8397d1::t_dba4b5a12f5ae6 83-84
+  s_fa77118e8397d1::t_89f5c5cb171d07 91
+  s_fa77118e8397d1::t_6c301fcea47a8f 98
+Makefile
+  s_fa77118e8397d1::t_c0d9eb78d03463 8-9
+  s_fa77118e8397d1::t_91bcca697e803c 10-12
+migrations/004_settings.sql
+  s_fa77118e8397d1::t_d2bffd6f49c870 1-7
+go.sum
+  s_fa77118e8397d1::t_6531388df79f4c 61-62,65-66,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2d9857d0a9d4aa359d18c4b758c9a51e50dbe6c5",
+  "prompts": {},
+  "sessions": {
+    "s_fa77118e8397d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54812023-b47b-4b67-be60-a88b22a0d7e3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "lubezerra_meli <lucas.bezerra@mercadolivre.com>"
+    }
+  }
+}
