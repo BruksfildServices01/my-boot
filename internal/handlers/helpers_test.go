@@ -34,6 +34,12 @@ func TestParsePrice(t *testing.T) {
 		{"1.200,00", 1200.00},
 		{"500", 500.00},
 		{"R$ 12.000,00", 12000.00},
+		// casos ambíguos que antes quebravam
+		{"1,513", 1513.00}, // vírgula como sep de milhar
+		{"1.513", 1513.00}, // ponto como sep de milhar
+		{"1,50", 1.50},     // vírgula como decimal
+		{"299.90", 299.90}, // ponto como decimal
+		{"1513", 1513.00},  // sem separador
 	}
 	for _, c := range cases {
 		got, err := parsePrice(c.input)

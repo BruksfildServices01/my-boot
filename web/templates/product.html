@@ -127,16 +127,9 @@
 <script>
 // ── Dados do produto ──────────────────────────────────────────
 const colorMap = {{.ColorMapJSON}};
-const prod = {
-  name:  "{{.Product.Name}}",
-  brand: "{{.Product.Brand}}",
-  model: "{{.Product.Model}}",
-  price: "{{brl (.Product.DisplayPrice)}}",
-  code:  "{{.Product.Code}}",
-  slug:  "{{.Product.Slug}}",
-};
-const whatsapp = "{{.WhatsAppNumber}}";
-const siteURL  = "{{.SiteURL}}";
+const prod     = {{.ProductJSON}};
+const whatsapp = {{.WhatsAppNumber}};
+const siteURL  = {{.SiteURL}};
 
 let selectedColor = "";
 let selectedSize  = "";

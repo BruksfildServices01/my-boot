@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"log"
@@ -24,35 +25,33 @@ func templateFuncs() template.FuncMap {
 }
 
 var colorMap = map[string]string{
-	"branco":      "#F5F5F5",
-	"preto":       "#111827",
-	"vermelho":    "#EF4444",
-	"azul":        "#3B82F6",
-	"azul navy":   "#1E3A5F",
-	"navy":        "#1E3A5F",
-	"verde":       "#22C55E",
-	"amarelo":     "#FBBF24",
-	"laranja":     "#F97316",
-	"rosa":        "#EC4899",
-	"roxo":        "#8B5CF6",
-	"cinza":       "#9CA3AF",
-	"marrom":      "#92400E",
-	"bege":        "#D4A76A",
-	"nude":        "#E8C4A0",
-	"vinho":       "#7C2D12",
-	"coral":       "#F87171",
-	"off white":   "#F9F5F0",
-	"creme":       "#FEF9EE",
+	"branco":    "#F5F5F5",
+	"preto":     "#111827",
+	"vermelho":  "#EF4444",
+	"azul":      "#3B82F6",
+	"azul navy": "#1E3A5F",
+	"navy":      "#1E3A5F",
+	"verde":     "#22C55E",
+	"amarelo":   "#FBBF24",
+	"laranja":   "#F97316",
+	"rosa":      "#EC4899",
+	"roxo":      "#8B5CF6",
+	"cinza":     "#9CA3AF",
+	"marrom":    "#92400E",
+	"bege":      "#D4A76A",
+	"nude":      "#E8C4A0",
+	"vinho":     "#7C2D12",
+	"coral":     "#F87171",
+	"off white": "#F9F5F0",
+	"creme":     "#FEF9EE",
 }
 
 func colorHex(name string) string {
-	// para cores compostas como "Branco/Preto", usa a primeira
 	first := strings.SplitN(name, "/", 2)[0]
 	first = strings.ToLower(strings.TrimSpace(first))
 	if hex, ok := colorMap[first]; ok {
 		return hex
 	}
-	// fallback: cor baseada no hash do nome
 	hash := 0
 	for _, c := range first {
 		hash = (hash*31 + int(c)) & 0xFFFFFF
@@ -67,11 +66,14 @@ func mustParse(files ...string) *template.Template {
 }
 
 func render(w http.ResponseWriter, tmpl *template.Template, data any) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
+	var buf bytes.Buffer
+	if err := tmpl.ExecuteTemplate(&buf, "layout", data); err != nil {
 		log.Println("template error:", err)
 		http.Error(w, "Erro interno", http.StatusInternalServerError)
+		return
 	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	buf.WriteTo(w)
 }
 
 func envOrDefault(key, fallback string) string {
@@ -108,12 +110,40 @@ func formatBRL(v float64) string {
 }
 
 func parsePrice(s string) (float64, error) {
+	// Remove símbolo e espaços
 	s = strings.ReplaceAll(s, "R$", "")
-	s = strings.ReplaceAll(s, " ", "")
-	s = strings.ReplaceAll(s, " ", "")
-	s = strings.ReplaceAll(s, ".", "")
-	s = strings.ReplaceAll(s, ",", ".")
-	return strconv.ParseFloat(strings.TrimSpace(s), 64)
+	s = strings.ReplaceAll(s, " ", "") // NBSP
+	s = strings.TrimSpace(s)
+
+	hasDot   := strings.Contains(s, ".")
+	hasComma := strings.Contains(s, ",")
+
+	switch {
+	case hasDot && hasComma:
+		// Formato BR completo: 1.513,00 → remove ponto, vírgula vira ponto
+		s = strings.ReplaceAll(s, ".", "")
+		s = strings.ReplaceAll(s, ",", ".")
+
+	case hasComma && !hasDot:
+		parts := strings.SplitN(s, ",", 2)
+		// 1,513 → 3 dígitos após vírgula = separador de milhar → 1513
+		// 1,50  → 1-2 dígitos = decimal → 1.50
+		if len(parts) == 2 && len(parts[1]) == 3 {
+			s = strings.ReplaceAll(s, ",", "")
+		} else {
+			s = strings.ReplaceAll(s, ",", ".")
+		}
+
+	case hasDot && !hasComma:
+		parts := strings.SplitN(s, ".", 2)
+		// 1.513 → 3 dígitos após ponto = separador de milhar → 1513
+		// 299.90 → decimal normal, mantém
+		if len(parts) == 2 && len(parts[1]) == 3 {
+			s = strings.ReplaceAll(s, ".", "")
+		}
+	}
+
+	return strconv.ParseFloat(s, 64)
 }
 
 func slugify(s string) string {

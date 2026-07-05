@@ -98,8 +98,9 @@ func (h *CatalogHandler) Catalog(w http.ResponseWriter, r *http.Request) {
 type productData struct {
 	Product        models.Product
 	ColorMapJSON   template.JS
-	WhatsAppNumber string
-	SiteURL        string
+	ProductJSON    template.JS
+	WhatsAppNumber template.JS
+	SiteURL        template.JS
 }
 
 func (h *CatalogHandler) MyBoot(w http.ResponseWriter, r *http.Request) {
@@ -129,11 +130,22 @@ func (h *CatalogHandler) Product(w http.ResponseWriter, r *http.Request) {
 		colorMap[v.Color] = append(colorMap[v.Color], v)
 	}
 	colorJSON, _ := json.Marshal(colorMap)
+	prodJSON, _ := json.Marshal(map[string]string{
+		"name":  product.Name,
+		"brand": product.Brand,
+		"model": product.Model,
+		"price": formatBRL(product.DisplayPrice()),
+		"code":  product.Code,
+		"slug":  product.Slug,
+	})
+	whatsappJSON, _ := json.Marshal(envOrDefault("WHATSAPP_NUMBER", ""))
+	siteURLJSON, _ := json.Marshal(envOrDefault("SITE_URL", ""))
 
 	render(w, h.productTmpl, productData{
 		Product:        *product,
 		ColorMapJSON:   template.JS(colorJSON),
-		WhatsAppNumber: envOrDefault("WHATSAPP_NUMBER", ""),
-		SiteURL:        envOrDefault("SITE_URL", ""),
+		ProductJSON:    template.JS(prodJSON),
+		WhatsAppNumber: template.JS(whatsappJSON),
+		SiteURL:        template.JS(siteURLJSON),
 	})
 }
