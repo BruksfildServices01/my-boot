@@ -1,0 +1,34 @@
+web/templates/product.html
+  s_fa77118e8397d1::t_4abf789c5e501d 131-132
+  s_fa77118e8397d1::t_7ce2424b96121c 130
+web/templates/admin/product_form.html
+  s_fa77118e8397d1::t_8331dd624705fa 75,77
+  s_fa77118e8397d1::t_7ae2aed5bd55e7 107,109
+internal/handlers/helpers.go
+  s_fa77118e8397d1::t_99ebb555fa0af8 69-70,73,75-76
+  s_fa77118e8397d1::t_0109e985134daa 4
+  s_fa77118e8397d1::t_12c369f344a56b 28-46,113,115-146
+internal/handlers/helpers_test.go
+  s_fa77118e8397d1::t_c3edc10a115b87 37-42
+internal/handlers/catalog.go
+  s_fa77118e8397d1::t_be3b151251d527 141-142,148-149
+  s_fa77118e8397d1::t_ca4b56ab85efd0 133-140,147
+  s_fa77118e8397d1::t_308e0e1b3d89f1 101
+  s_fa77118e8397d1::t_dbc47a2fdbe37d 102-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7724893813edf1e3cafdea36aff780c755c66b20",
+  "prompts": {},
+  "sessions": {
+    "s_fa77118e8397d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54812023-b47b-4b67-be60-a88b22a0d7e3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "lubezerra_meli <lucas.bezerra@mercadolivre.com>"
+    }
+  }
+}
